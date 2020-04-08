@@ -1,5 +1,5 @@
-redis-py == 3.4
-spleeter == 1.5
-boto3 == 1.12
+redis
+spleeter
+boto3
 # see https://github.com/deezer/spleeter/wiki/1.-Installation#using-pip
 ffmpeg
