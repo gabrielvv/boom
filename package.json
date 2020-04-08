@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node .",
     "test": "jest",
     "dev": "nodemon --watch",
     "lint": "eslint --cache --fix ."

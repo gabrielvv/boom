@@ -8,7 +8,9 @@ const { baseUrl, port, redis: redisConfig } = require('config');
 const { post: postSchema, handleError } = require('./validation');
 const { getStatusUrl } = require('./utils');
 
-const redisClient = redis.createClient(redisConfig.port, redisConfig.host);
+const redisClient = redisConfig.url
+  ? redis.createClient(redisConfig.url)
+  : redis.createClient(redisConfig.port, redisConfig.host);
 
 redisClient.on('error', (error) => {
   // eslint-disable-next-line no-console
