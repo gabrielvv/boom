@@ -1,6 +1,10 @@
 name: boom
 
+channels:
+  - conda-forge
+
 dependencies:
-  - redis-py
-  - spleeter
-  - boto3
+  - python=3.7
+  - redis-py=3.4
+  - spleeter=1.5
+  - boto3=1.12
