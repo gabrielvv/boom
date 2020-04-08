@@ -4,11 +4,11 @@ const {
 } = require('express-validator');
 const uuid = require('uuid');
 const redis = require('redis');
-const { baseUrl, port, queueName } = require('config');
+const { baseUrl, port, redis: redisConfig } = require('config');
 const { post: postSchema, handleError } = require('./validation');
-const { getStatusUrl } = require('./utils')
+const { getStatusUrl } = require('./utils');
 
-const redisClient = redis.createClient();
+const redisClient = redis.createClient(redisConfig.port, redisConfig.host);
 
 redisClient.on('error', (error) => {
   // eslint-disable-next-line no-console
@@ -26,7 +26,7 @@ app.post('/', checkSchema(postSchema), handleError(), (req, res) => {
     model,
     status: getStatusUrl(baseUrl, port, id),
   };
-  redisClient.rpush(queueName, JSON.stringify(payload));
+  redisClient.rpush(redisConfig.queueName, JSON.stringify(payload));
   res.send(payload);
 });
 
@@ -34,7 +34,7 @@ if (require.main === module) {
   app.listen(port, () => console.log(`listening on port ${port}`));
 }
 
-module.exports = { 
+module.exports = {
   app,
-  redisClient
-}
+  redisClient,
+};

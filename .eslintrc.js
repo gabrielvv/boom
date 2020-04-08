@@ -5,8 +5,7 @@ module.exports = {
     es6: true,
   },
   extends: [
-    'airbnb-base',
-    'jest'
+    'airbnb-base'
   ],
   globals: {
     Atomics: 'readonly',
@@ -17,4 +16,12 @@ module.exports = {
   },
   rules: {
   },
+  overrides: [
+    {
+      files: ["*.spec.js", "__mocks__/*"],
+      env: {
+        jest: true
+      }
+    }
+  ]
 };

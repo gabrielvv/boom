@@ -1,4 +1,8 @@
 {
   "port": 3000,
-  "queueName": "SPLIT_QUEUE"
+  "redis": {
+    "queueName": "SPLIT_QUEUE",
+    "host": "127.0.0.1",
+    "port": 6379
+  }
 }

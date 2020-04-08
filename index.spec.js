@@ -1,10 +1,10 @@
 const request = require('supertest');
+const { redis: redisConfig } = require('config');
 const { app, redisClient } = require('./index');
-const { queueName } = require('config');
 
 jest.mock('redis');
 jest.mock('./utils', () => ({
-  getStatusUrl: () => 'fake-url'
+  getStatusUrl: () => 'fake-url',
 }));
 jest.mock('uuid');
 
@@ -14,26 +14,28 @@ redisClient.rpush = mockRpush;
 describe('api', () => {
   describe('/', () => {
     test('returns a status url', async () => {
-      const file = 'http://example.com/1234567.mp3'
+      const file = 'http://example.com/1234567.mp3';
       const model = '2stems';
       const { body } = await request(app).post(`/?file=${file}&model=${model}`);
       const expectedPayload = {
         id: 'fake-uuid',
         file,
         model,
-        status: `fake-url`
+        status: 'fake-url',
       };
-      expect(body).toEqual(expectedPayload)
+      expect(body).toEqual(expectedPayload);
 
       expect(redisClient.rpush).toHaveBeenCalledTimes(1);
-      expect(redisClient.rpush).toHaveBeenCalledWith(queueName, JSON.stringify(expectedPayload));
-    })
+      expect(redisClient.rpush).toHaveBeenCalledWith(
+        redisConfig.queueName, JSON.stringify(expectedPayload),
+      );
+    });
 
     test('returns a 422', async () => {
-      const file = 'file'
+      const file = 'file';
       const model = '2stems';
       const { status } = await request(app).post(`/?file=${file}&model=${model}`);
-      expect(status).toEqual(422)
-    })
-  })
+      expect(status).toEqual(422);
+    });
+  });
 });
