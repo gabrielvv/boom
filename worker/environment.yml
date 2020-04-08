@@ -3,3 +3,4 @@ name: boom
 dependencies:
   - redis-py
   - spleeter
+  - boto3
