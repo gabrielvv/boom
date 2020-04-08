@@ -41,5 +41,5 @@ if __name__ == "__main__":
         if not serialized_payload:
             continue
 
-        # TODO: validation / sanitization
-        job((serialized_payload))
+        # TODO: payload validation / sanitization
+        job(json.loads(serialized_payload))
