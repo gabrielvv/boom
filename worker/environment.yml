@@ -1,0 +1,5 @@
+name: boom
+
+dependencies:
+  - redis-py
+  - spleeter
