@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const {
   checkSchema,
 } = require('express-validator');
@@ -20,6 +21,9 @@ redisClient.on('error', (error) => {
 
 const app = express();
 app.use(bodyParser());
+app.use(cors({
+  origin: '*',
+}));
 
 const splitHandler = (extractPayloadFn) => (req, res) => {
   const jobId = uuid.v4();

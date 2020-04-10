@@ -4,12 +4,18 @@ import json
 from s3 import upload_file, download_file
 from separate import separate
 from config import config
+import logging
 
-QUIT = True
+QUIT = False
 bucket = config.BUCKET_NAME
 redis_queue = config.REDIS_QUEUE
-r = redis.Redis(host=config.REDIS_HOST,
-                port=config.REDIS_PORT, db=0)
+
+print(json.dumps(config))
+if config.REDIS_URL:
+    r = redis.Redis.from_url(config.REDIS_URL)
+else:
+    r = redis.Redis(host=config.REDIS_HOST,
+                    port=config.REDIS_PORT, db=0)
 
 
 def job(options):
@@ -37,6 +43,7 @@ def job(options):
 if __name__ == "__main__":
     while not QUIT:
         serialized_payload = r.blpop([redis_queue], 30)
+        logging.info(serialized_payload)
 
         if not serialized_payload:
             continue

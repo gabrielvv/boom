@@ -2,6 +2,7 @@ from os import environ
 
 
 class Config:
+    REDIS_URL = environ.get('REDIS_URL')
     REDIS_HOST = environ.get('REDIS_HOST')
     REDIS_PORT = environ.get('REDIS_PORT')
     REDIS_QUEUE = environ.get('REDIS_QUEUE')
