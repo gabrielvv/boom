@@ -4,7 +4,7 @@ const {
 } = require('express-validator');
 const uuid = require('uuid');
 const redis = require('redis');
-const { baseUrl, port, redis: redisConfig } = require('config');
+const { port, redis: redisConfig } = require('config');
 const { post: postSchema, handleError } = require('./validation');
 const { getStatusUrl } = require('./utils');
 
@@ -20,13 +20,13 @@ redisClient.on('error', (error) => {
 const app = express();
 
 app.post('/', checkSchema(postSchema), handleError(), (req, res) => {
-  const id = uuid.v4();
+  const jobId = uuid.v4();
   const { file, model } = req.query;
   const payload = {
-    id,
+    id: jobId,
     file,
     model,
-    status: getStatusUrl(baseUrl, port, id),
+    status: getStatusUrl(req, jobId),
   };
   redisClient.rpush(redisConfig.queueName, JSON.stringify(payload));
   res.send(payload);

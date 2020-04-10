@@ -1,6 +1,5 @@
 {
   "port": "PORT",
-  "baseUrl": "BASE_URL",
   "redis": {
     "url": "REDIS_URL"
   }

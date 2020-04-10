@@ -1,9 +1,9 @@
 const request = require('supertest');
 const { redis: redisConfig } = require('config');
-const { app, redisClient } = require('./index');
+const { app, redisClient } = require('../index');
 
 jest.mock('redis');
-jest.mock('./utils', () => ({
+jest.mock('../utils', () => ({
   getStatusUrl: () => 'fake-url',
 }));
 jest.mock('uuid');
