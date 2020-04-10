@@ -1,11 +1,12 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const {
   checkSchema,
 } = require('express-validator');
 const uuid = require('uuid');
 const redis = require('redis');
 const { port, redis: redisConfig } = require('config');
-const { post: postSchema, handleError } = require('./validation');
+const { postSchema, getSchema, handleError } = require('./validation');
 const { getStatusUrl } = require('./utils');
 
 const redisClient = redisConfig.url
@@ -18,10 +19,11 @@ redisClient.on('error', (error) => {
 });
 
 const app = express();
+app.use(bodyParser());
 
-app.post('/', checkSchema(postSchema), handleError(), (req, res) => {
+const splitHandler = (extractPayloadFn) => (req, res) => {
   const jobId = uuid.v4();
-  const { file, model } = req.query;
+  const { file, model } = extractPayloadFn(req);
   const payload = {
     id: jobId,
     file,
@@ -30,7 +32,15 @@ app.post('/', checkSchema(postSchema), handleError(), (req, res) => {
   };
   redisClient.rpush(redisConfig.queueName, JSON.stringify(payload));
   res.send(payload);
-});
+};
+
+app.post('/api/split', checkSchema(postSchema), handleError(), splitHandler(
+  (req) => ({ file: req.body.file, model: req.body.model }),
+));
+
+app.get('/api/split', checkSchema(getSchema), handleError(), splitHandler(
+  (req) => ({ file: req.query.file, model: req.query.model }),
+));
 
 if (require.main === module) {
   app.listen(port, () => console.log(`listening on port ${port}`));

@@ -1,5 +1,6 @@
 /* eslint-disable global-require */
 module.exports = {
-  post: require('./post'),
+  postSchema: require('./post'),
+  getSchema: require('./get'),
   handleError: require('./handleError'),
 };

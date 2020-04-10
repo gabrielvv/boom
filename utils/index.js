@@ -8,5 +8,5 @@ const getBaseUrl = (req) => {
 };
 
 module.exports = {
-  getStatusUrl: (req, jobId) => `${getBaseUrl(req)}/status?job=${jobId}`,
+  getStatusUrl: (req, jobId) => `${getBaseUrl(req)}/${jobId}/status`,
 };
