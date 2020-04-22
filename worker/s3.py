@@ -1,7 +1,8 @@
 import logging
 import boto3
 from botocore.exceptions import ClientError
-from config import config
+from config import Config
+from os import path
 
 
 def init_client(_cache={}):
@@ -14,14 +15,18 @@ def init_client(_cache={}):
 
     s3_client = boto3.client(
         's3',
-        aws_access_key_id=config.AWS_ACCESS_KEY,
-        aws_secret_access_key=config.AWS_SECRET_KEY
+        aws_access_key_id=Config.AWS_ACCESS_KEY,
+        aws_secret_access_key=Config.AWS_SECRET_KEY
     )
     _cache['s3_client'] = s3_client
     return s3_client
 
 
 def upload_file(file_name, bucket, object_name=None):
+    logging.info(
+        'upload_file file_name=%s, bucket=%s, object_name=%s',
+        file_name, bucket, object_name
+    )
     s3_client = init_client()
     """Upload a file to an S3 bucket
 
@@ -44,12 +49,16 @@ def upload_file(file_name, bucket, object_name=None):
     return True
 
 
-def download_file(bucket, object_name, file_name=None):
+def download_file(bucket, object_name, output_file_name=None):
+    logging.info(
+        'download_file bucket=%s object_name=%s output_file_name=%s',
+        bucket, object_name, output_file_name
+    )
     s3_client = init_client()
-    if not file_name:
-        file_name = object_name
-    s3_client.download_file(bucket, object_name, file_name)
-    return True
+    if not output_file_name:
+        output_file_name = path.join(Config.DOWNLOAD_FOLDER, object_name)
+    s3_client.download_file(bucket, object_name, output_file_name)
+    return output_file_name
 
 
 def create_presigned_url(bucket_name, object_name, expiration=3600):

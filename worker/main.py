@@ -1,39 +1,70 @@
+import logging
+import disable_tensorflow_warning
+import sys
 import redis
 from os import listdir, path
 import json
 from s3 import upload_file, download_file
 from separate import separate
-from config import config
-import logging
+from config import Config
+
+if not Config.BUCKET_NAME:
+    raise Exception('BUCKET_NAME not found')
+if not Config.REDIS_QUEUE:
+    raise Exception('REDIS_QUEUE not found')
 
 QUIT = False
-bucket = config.BUCKET_NAME
-redis_queue = config.REDIS_QUEUE
+bucket = Config.BUCKET_NAME
+redis_queue = Config.REDIS_QUEUE
+redis_retry_queue = Config.REDIS_RETRY_QUEUE
+logging.basicConfig(level=logging.INFO)
 
-print(json.dumps(config))
-if config.REDIS_URL:
-    r = redis.Redis.from_url(config.REDIS_URL)
+logging.info('REDIS_HOST=%s', Config.REDIS_HOST)
+if Config.REDIS_URL:
+    r = redis.Redis.from_url(Config.REDIS_URL)
 else:
-    r = redis.Redis(host=config.REDIS_HOST,
-                    port=config.REDIS_PORT, db=0)
+    r = redis.Redis(host=Config.REDIS_HOST,
+                    port=Config.REDIS_PORT, db=0)
 
 
 def job(options):
-    task_id = options['id']
-    dir_name = task_id
-    file_name = options['file']
-    model = options['model']
+    logging.info('job with options=%s', options)
 
-    download_file(bucket, file_name)
+    task_id = options.get('id')
+    dir_name = path.join('tmp', task_id)
+    input_file_url = options.get('file')
+    model = options.get('model')
 
-    separate(file_name, dir_name, model)
+    if not input_file_url:
+        logging.warn('No file provided')
+        return False
+
+    # TODO get s3 signed url
+    s3_signed_url = input_file_url
+
+    separate(
+        s3_signed_url,
+        # TODO save directly in s3
+        dir_name,
+        model
+    )
+
+    input_file_name = input_file_url.split('/')[-1].split('.')[0]
+    output_dir_name = path.join(dir_name, input_file_name)
 
     # TODO: load files to s3
-    for file_name in listdir(dir_name):
-        with open(path.join(dir_name, file_name), "rb") as f:
-            # TODO progress callback
-            upload_file(f, bucket)
+    for output_file_name in listdir(output_dir_name):
+        # TODO progress callback
+        object_name = '/'.join((
+            'result',
+            task_id,
+            input_file_name,
+            output_file_name
+        ))
+        complete_path = path.join(output_dir_name, output_file_name)
+        upload_file(complete_path, bucket, object_name)
 
+        # Store task status and file locations for mailing queue
         r.set(task_id, json.dumps({
             'status': 'done',
             'directory': 's3_signed_url'
@@ -43,10 +74,15 @@ def job(options):
 if __name__ == "__main__":
     while not QUIT:
         serialized_payload = r.blpop([redis_queue], 30)
-        logging.info(serialized_payload)
+        logging.info('serialized_payload=%s', serialized_payload)
 
         if not serialized_payload:
             continue
 
+        payload = json.loads(serialized_payload[1])
         # TODO: payload validation / sanitization
-        job(json.loads(serialized_payload))
+        # try:
+        job(payload)
+        # except:
+        #     print("Unexpected error:", sys.exc_info()[0])
+        #     r.rpush(redis_retry_queue, json.dumps(payload))

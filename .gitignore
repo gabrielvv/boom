@@ -1,3 +1,7 @@
+s3-tuto/
+pretrained_models/
+tmp/
+
 # redis
 dump.rdb
 
