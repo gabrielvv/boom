@@ -1,10 +1,9 @@
 import logging
 import disable_tensorflow_warning
-import sys
 import redis
 from os import listdir, path
 import json
-from s3 import upload_file, download_file
+from s3 import upload_file, create_presigned_url
 from separate import separate
 from config import Config
 
@@ -40,7 +39,9 @@ def job(options):
         return False
 
     # TODO get s3 signed url
-    s3_signed_url = input_file_url
+    # https://bucket.s3.region.amazonaws.com/f/g/h => f/g/h
+    input_object_name = input_file_url.split('/', 3)[-1]
+    s3_signed_url = create_presigned_url(bucket, input_object_name)
 
     separate(
         s3_signed_url,
@@ -49,25 +50,29 @@ def job(options):
         model
     )
 
-    input_file_name = input_file_url.split('/')[-1].split('.')[0]
+    input_file_name = input_object_name.split('/')[-1].split('.')[0]
     output_dir_name = path.join(dir_name, input_file_name)
+    output_s3_dir_name = '/'.join((
+        'result',
+        task_id,
+        input_file_name
+    ))
 
     # TODO: load files to s3
     for output_file_name in listdir(output_dir_name):
-        # TODO progress callback
         object_name = '/'.join((
-            'result',
-            task_id,
-            input_file_name,
+            output_s3_dir_name,
             output_file_name
         ))
         complete_path = path.join(output_dir_name, output_file_name)
+
+        # TODO progress callback
         upload_file(complete_path, bucket, object_name)
 
         # Store task status and file locations for mailing queue
         r.set(task_id, json.dumps({
             'status': 'done',
-            'directory': 's3_signed_url'
+            'location': output_s3_dir_name
         }))
 
 

@@ -3,6 +3,27 @@ import boto3
 from botocore.exceptions import ClientError
 from config import Config
 from os import path
+import sys
+import threading
+
+class ProgressPercentage(object):
+
+    def __init__(self, filename):
+        self._filename = filename
+        self._size = float(path.getsize(filename))
+        self._seen_so_far = 0
+        self._lock = threading.Lock()
+
+    def __call__(self, bytes_amount):
+        # To simplify, assume this is hooked up to a single filename
+        with self._lock:
+            self._seen_so_far += bytes_amount
+            percentage = (self._seen_so_far / self._size) * 100
+            sys.stdout.write(
+                "\r%s  %s / %s  (%.2f%%)" % (
+                    self._filename, self._seen_so_far, self._size,
+                    percentage))
+            sys.stdout.flush()
 
 
 def init_client(_cache={}):
@@ -23,11 +44,6 @@ def init_client(_cache={}):
 
 
 def upload_file(file_name, bucket, object_name=None):
-    logging.info(
-        'upload_file file_name=%s, bucket=%s, object_name=%s',
-        file_name, bucket, object_name
-    )
-    s3_client = init_client()
     """Upload a file to an S3 bucket
 
     :param file_name: File to upload
@@ -36,13 +52,24 @@ def upload_file(file_name, bucket, object_name=None):
     :return: True if file was uploaded, else False
     """
 
+    logging.info(
+        'upload_file file_name=%s, bucket=%s, object_name=%s',
+        file_name, bucket, object_name
+    )
+    s3_client = init_client()
+
     # If S3 object_name was not specified, use file_name
     if object_name is None:
         object_name = file_name
 
     # Upload the file
     try:
-        s3_client.upload_file(file_name, bucket, object_name)
+        s3_client.upload_file(
+            file_name,
+            bucket,
+            object_name,
+            Callback=ProgressPercentage(file_name)
+        )
     except ClientError as e:
         logging.error(e)
         return False
