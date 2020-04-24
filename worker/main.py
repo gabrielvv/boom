@@ -6,6 +6,8 @@ import json
 from s3 import upload_file, create_presigned_url
 from separate import separate
 from config import Config
+import shutil
+
 
 if not Config.BUCKET_NAME:
     raise Exception('BUCKET_NAME not found')
@@ -26,11 +28,21 @@ else:
                     port=Config.REDIS_PORT, db=0)
 
 
+def delete_directory(dir_path):
+    if not dir_path:
+        raise Exception('dir_path is empty')
+
+    try:
+        shutil.rmtree(dir_path)
+    except OSError as e:
+        print("Error: %s : %s" % (dir_path, e.strerror))
+
+
 def job(options):
     logging.info('job with options=%s', options)
 
     task_id = options.get('id')
-    dir_name = path.join('tmp', task_id)
+    job_dir_name = path.join('tmp', task_id)
     input_file_url = options.get('file')
     model = options.get('model')
 
@@ -46,19 +58,19 @@ def job(options):
     separate(
         s3_signed_url,
         # TODO save directly in s3
-        dir_name,
+        job_dir_name,
         model
     )
 
     input_file_name = input_object_name.split('/')[-1].split('.')[0]
-    output_dir_name = path.join(dir_name, input_file_name)
+    output_dir_name = path.join(job_dir_name, input_file_name)
     output_s3_dir_name = '/'.join((
         'result',
         task_id,
         input_file_name
     ))
 
-    # TODO: load files to s3
+    # TODO: another queue/worker for this job ??
     for output_file_name in listdir(output_dir_name):
         object_name = '/'.join((
             output_s3_dir_name,
@@ -69,11 +81,13 @@ def job(options):
         # TODO progress callback
         upload_file(complete_path, bucket, object_name)
 
-        # Store task status and file locations for mailing queue
-        r.set(task_id, json.dumps({
-            'status': 'done',
-            'location': output_s3_dir_name
-        }))
+    delete_directory(job_dir_name)
+
+    # Store task status and file locations for mailing queue
+    r.set(task_id, json.dumps({
+        'status': 'done',
+        'location': output_s3_dir_name
+    }))
 
 
 if __name__ == "__main__":

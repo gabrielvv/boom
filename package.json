@@ -14,11 +14,15 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "aws-sdk": "^2.662.0",
     "body-parser": "^1.19.0",
     "config": "^3.3.1",
     "cors": "^2.8.5",
+    "debug": "^4.1.1",
     "express": "^4.17.1",
     "express-validator": "^6.4.0",
+    "lodash": "^4.17.15",
+    "pug": "^2.0.4",
     "redis": "^3.0.2",
     "uuid": "^7.0.3"
   },

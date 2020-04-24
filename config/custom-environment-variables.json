@@ -2,5 +2,10 @@
   "port": "PORT",
   "redis": {
     "url": "REDIS_URL"
+  },
+  "storage": {
+    "s3": {
+      "bucket": "AWS_BUCKET"
+    }
   }
 }

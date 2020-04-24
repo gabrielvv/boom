@@ -4,5 +4,10 @@
     "queueName": "queue:split",
     "host": "127.0.0.1",
     "port": 6379
+  },
+  "storage": {
+    "s3": {
+      "bucket": "test"
+    }
   }
 }
