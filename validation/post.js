@@ -1,8 +1,14 @@
 module.exports = {
+  email: {
+    in: ['body'],
+    errorMessage: 'Invalid email',
+    isEmail: true,
+    exists: true,
+  },
   file: {
     in: ['body'],
     errorMessage: 'Invalid file',
-    isURL: true,
+    isURL: false,
     exists: true,
   },
   model: {

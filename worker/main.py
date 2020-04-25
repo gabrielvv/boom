@@ -7,6 +7,7 @@ from s3 import upload_file, create_presigned_url
 from separate import separate
 from config import Config
 import shutil
+from mail import send_email
 
 
 if not Config.BUCKET_NAME:
@@ -43,16 +44,21 @@ def job(options):
 
     task_id = options.get('id')
     job_dir_name = path.join('tmp', task_id)
-    input_file_url = options.get('file')
+    input_object_name = options.get('file')
     model = options.get('model')
+    email = options.get('email')
 
-    if not input_file_url:
+    if not input_object_name:
         logging.warn('No file provided')
+        return False
+
+    if not email:
+        logging.warn('Invalid email')
         return False
 
     # TODO get s3 signed url
     # https://bucket.s3.region.amazonaws.com/f/g/h => f/g/h
-    input_object_name = input_file_url.split('/', 3)[-1]
+    # input_object_name = input_file_url.split('/', 3)[-1]
     s3_signed_url = create_presigned_url(bucket, input_object_name)
 
     separate(
@@ -70,25 +76,34 @@ def job(options):
         input_file_name
     ))
 
+    object_list = []
+
     # TODO: another queue/worker for this job ??
     for output_file_name in listdir(output_dir_name):
         object_name = '/'.join((
             output_s3_dir_name,
             output_file_name
         ))
-        complete_path = path.join(output_dir_name, output_file_name)
+        local_path = path.join(output_dir_name, output_file_name)
 
         # TODO progress callback
-        upload_file(complete_path, bucket, object_name)
+        upload_file(local_path, bucket, object_name)
+        object_list.append(create_presigned_url(bucket, object_name))
 
     delete_directory(job_dir_name)
 
     # Store task status and file locations for mailing queue
     r.set(task_id, json.dumps({
         'status': 'done',
-        'location': output_s3_dir_name
+        # TODO: presigned get URL
+        'object_list': object_list.__str__()
     }))
 
+    try:
+        send_email(email, object_list)
+    except Exception as e:
+        logging.error('Unable to send mail')
+        logging.error(e)
 
 if __name__ == "__main__":
     while not QUIT:
@@ -102,6 +117,6 @@ if __name__ == "__main__":
         # TODO: payload validation / sanitization
         # try:
         job(payload)
-        # except:
+        # except Exception as e:
         #     print("Unexpected error:", sys.exc_info()[0])
         #     r.rpush(redis_retry_queue, json.dumps(payload))

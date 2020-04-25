@@ -1,0 +1,12 @@
+html
+  head
+    title= title
+    link(
+      rel='stylesheet'
+      href='https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css'
+    )
+    link(rel='stylesheet' href='style/index.css')
+
+  body
+    h1= message
+    div(id='result')=JSON.stringify(data)

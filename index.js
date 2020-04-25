@@ -34,9 +34,10 @@ app.use(express.static('public'));
 
 const splitHandler = (extractPayloadFn) => (req, res) => {
   const jobId = uuid.v4();
-  const { file, model } = extractPayloadFn(req);
+  const { file, model, email } = extractPayloadFn(req);
   const payload = {
     id: jobId,
+    email,
     file,
     model,
     status: getStatusUrl(req, jobId),
@@ -46,11 +47,11 @@ const splitHandler = (extractPayloadFn) => (req, res) => {
 };
 
 app.post('/api/split', checkSchema(postSchema), handleError(), splitHandler(
-  (req) => ({ file: req.body.file, model: req.body.model }),
+  (req) => ({ ...req.body }),
 ));
 
 app.get('/api/split', checkSchema(getSchema), handleError(), splitHandler(
-  (req) => ({ file: req.query.file, model: req.query.model }),
+  (req) => ({ ...req.query }),
 ));
 
 app.post('/form/:formId/storage/:provider', (req, res) => storageProviders[req.params.provider].createPresignedPost(req, res));
@@ -59,6 +60,12 @@ app.get('/form/:formId/storage/:provider', (req, res) => storageProviders[req.pa
 
 app.get('/', (req, res) => {
   res.render('index', { title: 'Hey', message: 'Hello there!' });
+});
+
+app.get('/result/:id', (req, res) => {
+  redisClient.get(req.params.id, (error, data) => {
+    res.render('result', { title: 'Result', data });
+  });
 });
 
 if (require.main === module) {

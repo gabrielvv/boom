@@ -1,4 +1,10 @@
 module.exports = {
+  email: {
+    in: ['query'],
+    errorMessage: 'Invalid email',
+    isEmail: true,
+    exists: true,
+  },
   file: {
     in: ['query'],
     errorMessage: 'Invalid file',

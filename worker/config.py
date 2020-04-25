@@ -11,3 +11,4 @@ class Config():
     AWS_ACCESS_KEY = environ.get('AWS_ACCESS_KEY_ID')
     AWS_SECRET_KEY = environ.get('AWS_SECRET_ACCESS_KEY')
     DOWNLOAD_FOLDER = 'downloads'
+    SENDGRID_API_KEY = environ.get('SENDGRID_API_KEY')
