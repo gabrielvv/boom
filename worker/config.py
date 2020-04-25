@@ -13,4 +13,5 @@ class Config():
     DOWNLOAD_FOLDER = 'downloads'
     MAIL_API_KEY = environ.get('MAIL_API_KEY')
     MAIL_API_SECRET = environ.get('MAIL_API_SECRET')
-    MAIL_SENDER = environ.get('MAIL_SENDER')
+    MAIL_SENDER_ADDRESS = environ.get('MAIL_SENDER_ADDRESS')
+    MAIL_SENDER_NAME = environ.get('MAIL_SENDER_NAME')

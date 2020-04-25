@@ -14,7 +14,8 @@ def send_email(email, result_url):
         'Messages': [
             {
                 "From": {
-                    "Email": Config.MAIL_SENDER
+                    "Name": Config.MAIL_SENDER_NAME,
+                    "Email": Config.MAIL_SENDER_ADDRESS
                 },
                 "To": [
                     {
@@ -32,6 +33,6 @@ def send_email(email, result_url):
 
 
 if __name__ == "__main__":
-    result = send_email(Config.MAIL_SENDER, 'test')
+    result = send_email(Config.MAIL_SENDER_ADDRESS, 'test')
     print(result.status_code)
     print(result.json())
