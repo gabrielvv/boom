@@ -8,7 +8,7 @@ module.exports = {
   file: {
     in: ['query'],
     errorMessage: 'Invalid file',
-    isURL: true,
+    isURL: false,
     exists: true,
   },
   model: {

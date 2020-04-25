@@ -1,0 +1,14 @@
+html
+  head
+    title= title
+    block style
+      link(
+        rel='stylesheet'
+        href='https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css'
+      )
+      link(rel='stylesheet' href='/style/index.css')
+    block script
+      script(type='text/javascript' src='/javascript/app.js')
+
+  body
+    block content

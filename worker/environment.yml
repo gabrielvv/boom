@@ -8,4 +8,4 @@ dependencies:
   - redis-py=3.4
   - spleeter=1.5
   - boto3=1.12
-  - sendgrid=6.0.5
+  - mailjet_rest

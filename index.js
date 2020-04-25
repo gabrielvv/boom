@@ -64,7 +64,26 @@ app.get('/', (req, res) => {
 
 app.get('/result/:id', (req, res) => {
   redisClient.get(req.params.id, (error, data) => {
-    res.render('result', { title: 'Result', data });
+    if (!data) {
+      res.redirect('/');
+    }
+    const dataObj = JSON.parse(data);
+
+    dataObj.object_list = dataObj.object_list.map((objectUrl) => {
+      const match = objectUrl.match(/\/(\w+\.wav)\?/);
+      if (!match || match.length < 2) {
+        // TODO handle error
+      }
+      return {
+        url: objectUrl,
+        name: match[1],
+      };
+    });
+
+    res.render('result', {
+      title: 'Result',
+      data: dataObj,
+    });
   });
 });
 

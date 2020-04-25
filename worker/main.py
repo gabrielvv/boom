@@ -95,8 +95,7 @@ def job(options):
     # Store task status and file locations for mailing queue
     r.set(task_id, json.dumps({
         'status': 'done',
-        # TODO: presigned get URL
-        'object_list': object_list.__str__()
+        'object_list': object_list
     }))
 
     try:
@@ -104,6 +103,7 @@ def job(options):
     except Exception as e:
         logging.error('Unable to send mail')
         logging.error(e)
+
 
 if __name__ == "__main__":
     while not QUIT:

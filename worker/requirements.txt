@@ -3,4 +3,4 @@ spleeter
 boto3
 # see https://github.com/deezer/spleeter/wiki/1.-Installation#using-pip
 ffmpeg
-sendgrid
+mailjet_rest
