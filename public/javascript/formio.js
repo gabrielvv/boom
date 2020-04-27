@@ -29,6 +29,8 @@ window.onload = () => {
         filePattern: '.mp3,.wav',
         tableView: false,
         storage: 's3',
+        uploadOnly: true,
+        // TODO use conf variables
         dir: 'upload',
         webcam: false,
         validate: {
@@ -40,6 +42,7 @@ window.onload = () => {
             value: '',
           },
         ],
+        fileMaxSize: '100MB',
         calculateServer: false,
         key: 'upload',
         type: 'file',
@@ -47,7 +50,7 @@ window.onload = () => {
         hideLabel: true,
       },
       {
-        label: 'Select',
+        label: 'Modèle',
         tableView: true,
         data: {
           values: [
