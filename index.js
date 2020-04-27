@@ -6,6 +6,7 @@ const {
 } = require('express-validator');
 const uuid = require('uuid');
 const redis = require('redis');
+const debug = require('debug')('boom');
 const { port, redis: redisConfig } = require('config');
 const { postSchema, getSchema, handleError } = require('./validation');
 const { getStatusUrl } = require('./utils');
@@ -87,7 +88,7 @@ app.get('/result/:id', (req, res) => {
 });
 
 if (require.main === module) {
-  app.listen(port, () => console.log(`listening on port ${port}`));
+  app.listen(port, () => debug(`listening on port ${port}`));
 }
 
 module.exports = {
