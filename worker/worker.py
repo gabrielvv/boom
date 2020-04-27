@@ -102,8 +102,7 @@ def job(options):
     delete_directory(job_dir_name)
 
     # Store task status and file locations for mailing queue
-    # TODO expiration
-    r.set(task_id, json.dumps({
+    r.setex(task_id, 3600 * 24, json.dumps({
         'status': 'done',
         'object_list': object_list
     }))

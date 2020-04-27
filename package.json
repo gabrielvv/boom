@@ -7,7 +7,7 @@
     "start": "node .",
     "test": "jest",
     "dev": "nodemon --watch",
-    "worker": "python worker/main.py",
+    "worker": "python worker/worker.py",
     "lint": "eslint --cache --fix ."
   },
   "keywords": [],

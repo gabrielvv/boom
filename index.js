@@ -59,7 +59,7 @@ app.post('/form/:formId/storage/:provider', (req, res) => storageProviders[req.p
 app.get('/form/:formId/storage/:provider', (req, res) => storageProviders[req.params.provider].createPresignedGet(req, res));
 
 app.get('/', (req, res) => {
-  res.render('index', { title: 'Hey', message: 'Hello there!' });
+  res.render('index');
 });
 
 app.get('/result/:id', (req, res) => {
@@ -81,7 +81,6 @@ app.get('/result/:id', (req, res) => {
     });
 
     res.render('result', {
-      title: 'Result',
       data: dataObj,
     });
   });

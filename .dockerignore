@@ -1,1 +1,13 @@
+# Node
+__mocks__
 node_modules
+
+# Python
+# worker
+
+# Misc
+.git
+.vscode
+.github
+*Dockerfile*
+*docker-compose*
