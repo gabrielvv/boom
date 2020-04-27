@@ -1,5 +1,5 @@
 # For more information, please refer to https://aka.ms/vscode-docker-python
-FROM python:3.8
+FROM python:3.7
 
 # Keeps Python from generating .pyc files in the container
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -22,10 +22,10 @@ ENV REDIS_HOST redis
 ENV REDIS_PORT 6379
 ENV REDIS_QUEUE "queue:split"
 ENV BUCKET_NAME "poom-poom-tchak"
-ENV AWS_ACCESS_KEY_ID
-ENV AWS_SECRET_ACCESS_KEY
-ENV MAIL_API_KEY
-ENV MAIL_API_SECRET
+ENV AWS_ACCESS_KEY_ID aws_access_key_id
+ENV AWS_SECRET_ACCESS_KEY aws_secret_access_key
+ENV MAIL_API_KEY mail_api_key
+ENV MAIL_API_SECRET mail_api_secret
 ENV MAIL_SENDER_ADDRESS poom-poom-tchak@protonmail.com
 ENV MAIL_SENDER_NAME Boom
 ENV FRONT_BASE_URL http://localhost:3000

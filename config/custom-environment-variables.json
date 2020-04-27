@@ -1,7 +1,9 @@
 {
   "port": "PORT",
   "redis": {
-    "url": "REDIS_URL"
+    "url": "REDIS_URL",
+    "port": "REDIS_PORT",
+    "host": "REDIS_HOST"
   },
   "storage": {
     "s3": {

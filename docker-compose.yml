@@ -2,7 +2,7 @@ version: "3.4"
 
 services:
   boom:
-    image: boom
+    image: app
     build: .
     environment:
       NODE_ENV: production
@@ -15,7 +15,6 @@ services:
     image: worker
     build:
       context: ./worker
-      dockerfile: ./worker/Dockerfile
     env_file:
       - docker.env
 
