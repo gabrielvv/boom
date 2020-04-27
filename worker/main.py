@@ -7,8 +7,8 @@ from s3 import upload_file, create_presigned_url
 from separate import separate
 from config import Config
 import shutil
-from mail import send_email
-
+from send_email import send_email
+import threading
 
 if not Config.BUCKET_NAME:
     raise Exception('BUCKET_NAME not found')
@@ -77,6 +77,7 @@ def job(options):
     ))
 
     object_list = []
+    thread_list = []
 
     # TODO: another queue/worker for this job ??
     for output_file_name in listdir(output_dir_name):
@@ -87,19 +88,28 @@ def job(options):
         local_path = path.join(output_dir_name, output_file_name)
 
         # TODO progress callback
-        upload_file(local_path, bucket, object_name)
+        # see http://ls.pwd.io/2013/06/parallel-s3-uploads-using-boto-and-threads-in-python/
+        t = threading.Thread(target=upload_file, args=(
+            local_path, bucket, object_name))
+        thread_list.append(t)
         object_list.append(create_presigned_url(bucket, object_name))
+
+    for t in thread_list:
+        t.start()
+    for t in thread_list:
+        t.join()
 
     delete_directory(job_dir_name)
 
     # Store task status and file locations for mailing queue
+    # TODO expiration
     r.set(task_id, json.dumps({
         'status': 'done',
         'object_list': object_list
     }))
 
     try:
-        send_email(email, object_list)
+        send_email(email, f'{Config.FRONT_BASE_URL}/result/{task_id}')
     except Exception as e:
         logging.error('Unable to send mail')
         logging.error(e)

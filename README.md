@@ -10,3 +10,11 @@ heroku login
 heroku create
 heroku addons:create heroku-redis:hobby-dev -a <app-name>
 ```
+
+## S3
+
+https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html
+
+### Set/Get lifecycle w/ cli
+
+https://docs.aws.amazon.com/AmazonS3/latest/dev/set-lifecycle-cli.html

@@ -15,3 +15,4 @@ class Config():
     MAIL_API_SECRET = environ.get('MAIL_API_SECRET')
     MAIL_SENDER_ADDRESS = environ.get('MAIL_SENDER_ADDRESS')
     MAIL_SENDER_NAME = environ.get('MAIL_SENDER_NAME')
+    FRONT_BASE_URL = environ.get('FRONT_BASE_URL')

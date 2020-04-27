@@ -1,14 +1,18 @@
 from mailjet_rest import Client
 from config import Config
+import logging
 
 
-# https://dev.mailjet.com/email/reference/send-emails/#v3_1_post_send
 def send_email(email, result_url):
+    """
+    see https://dev.mailjet.com/email/reference/send-emails/#v3_1_post_send
+    """
+    logging.info('send_email email=%s result_url=%s', email, result_url)
     mailjet = Client(
         auth=(Config.MAIL_API_KEY, Config.MAIL_API_SECRET), version='v3.1')
     text_part = f'Vous trouverez les pistes audio à cette adresse: '
     text_part += result_url
-    html_part = f'<a>Vous trouverez les pistes audio '
+    html_part = f'Vous trouverez les pistes audio '
     html_part += f'<a href="{result_url}">ici</a>'
     data = {
         'Messages': [
@@ -22,7 +26,7 @@ def send_email(email, result_url):
                         "Email": email
                     }
                 ],
-                "Subject": "[Boom] vos pistes audio sont prêtes",
+                "Subject": "Vos pistes audio sont prêtes",
                 "TextPart": text_part,
                 "HTMLPart": html_part,
                 "CustomID": "BoomProcessingResult"

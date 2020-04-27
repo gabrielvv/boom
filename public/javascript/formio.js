@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-window.onload = function () {
+window.onload = () => {
   // TODO use configuration variables (w/ pug ??)
   const baseUrl = 'http://localhost:3000';
   Formio.setBaseUrl(baseUrl);
@@ -29,6 +29,7 @@ window.onload = function () {
         filePattern: '.mp3,.wav',
         tableView: false,
         storage: 's3',
+        dir: 'upload',
         webcam: false,
         validate: {
           required: true,
@@ -93,23 +94,20 @@ window.onload = function () {
       form.nosubmit = true;
 
       // Triggered when they click the submit button.
-      form.on('submit', ({ data }) => {
-        console.log(data);
-        return fetch(`${baseUrl}/api/split`, {
-          body: JSON.stringify({
-            ...data,
-            file: data.upload[0].key,
-          }),
-          headers: {
-            'content-type': 'application/json',
-          },
-          method: 'POST',
-          mode: 'cors',
-        })
-          .then((response) => {
-            form.emit('submitDone', data);
-            response.json();
-          });
-      });
+      form.on('submit', ({ data }) => fetch(`${baseUrl}/api/split`, {
+        body: JSON.stringify({
+          ...data,
+          file: data.upload[0].key,
+        }),
+        headers: {
+          'content-type': 'application/json',
+        },
+        method: 'POST',
+        mode: 'cors',
+      })
+        .then((response) => {
+          form.emit('submitDone', data);
+          response.json();
+        }));
     });
 };

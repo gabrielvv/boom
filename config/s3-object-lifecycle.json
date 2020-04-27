@@ -1,0 +1,36 @@
+{
+  "Rules": [
+    {
+      "Expiration": {
+        "Days": 1
+      },
+      "ID": "upload expiration",
+      "Filter": {
+        "Prefix": "upload"
+      },
+      "Status": "Enabled",
+      "NoncurrentVersionExpiration": {
+        "NoncurrentDays": 1
+      },
+      "AbortIncompleteMultipartUpload": {
+        "DaysAfterInitiation": 1
+      }
+    },
+    {
+      "Expiration": {
+        "Days": 1
+      },
+      "ID": "result expiration",
+      "Filter": {
+        "Prefix": "result"
+      },
+      "Status": "Enabled",
+      "NoncurrentVersionExpiration": {
+        "NoncurrentDays": 1
+      },
+      "AbortIncompleteMultipartUpload": {
+        "DaysAfterInitiation": 1
+      }
+    }
+  ]
+}

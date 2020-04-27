@@ -6,6 +6,7 @@ from os import path
 import sys
 import threading
 
+
 class ProgressPercentage(object):
 
     def __init__(self, filename):
@@ -63,12 +64,13 @@ def upload_file(file_name, bucket, object_name=None):
         object_name = file_name
 
     # Upload the file
+    # TODO add expiration
     try:
         s3_client.upload_file(
             file_name,
             bucket,
             object_name,
-            Callback=ProgressPercentage(file_name)
+            # Callback=ProgressPercentage(file_name)
         )
     except ClientError as e:
         logging.error(e)
