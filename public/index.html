@@ -30,7 +30,93 @@
       Formio.icons = 'fontawesome';
 
       Formio.setBaseUrl(baseUrl)
-      Formio.createForm(document.getElementById('formio'), 'https://examples.form.io/example')
+      Formio.createForm(document.getElementById('formio'), {
+        _id: '1234',
+        display: 'form',
+        title: 'foo',
+        components: [
+          {
+            label: 'Email',
+            placeholder: 'Email',
+            hideLabel: true,
+            spellcheck: true,
+            tableView: true,
+            calculateServer: false,
+            key: 'email',
+            type: 'textfield',
+            input: true,
+            hideOnChildrenHidden: false,
+            validate: {
+              required: true,
+            },
+          },
+          {
+            label: 'Upload',
+            filePattern: '.mp3,.wav',
+            tableView: false,
+            storage: 's3',
+            uploadOnly: true,
+            // TODO use conf variables
+            dir: 'upload',
+            webcam: false,
+            validate: {
+              required: true,
+            },
+            fileTypes: [
+              {
+                label: '',
+                value: '',
+              },
+            ],
+            fileMaxSize: '100MB',
+            calculateServer: false,
+            key: 'upload',
+            type: 'file',
+            input: true,
+            hideLabel: true,
+          },
+          {
+            label: 'Modèle',
+            tableView: true,
+            data: {
+              values: [
+                {
+                  label: '2 stems',
+                  value: '2stems',
+                },
+                {
+                  label: '4 stems',
+                  value: '4stems',
+                },
+                {
+                  label: '5 stems',
+                  value: '5stems',
+                },
+              ],
+            },
+            selectThreshold: 0.3,
+            calculateServer: false,
+            validate: {
+              required: true,
+            },
+            key: 'model',
+            type: 'select',
+            indexeddb: {
+              filter: {},
+            },
+            input: true,
+            defaultValue: '2stems',
+          },
+          {
+            type: 'button',
+            label: 'Submit',
+            key: 'submit',
+            disableOnInvalid: true,
+            input: true,
+            tableView: false,
+          },
+        ],
+      })
         .then(function (form) {
           // Prevent the submission from going to the form.io server.
           form.nosubmit = true;
