@@ -38,7 +38,8 @@ def init_client(_cache={}):
     s3_client = boto3.client(
         's3',
         aws_access_key_id=Config.AWS_ACCESS_KEY,
-        aws_secret_access_key=Config.AWS_SECRET_KEY
+        aws_secret_access_key=Config.AWS_SECRET_KEY,
+        region_name='eu-west-3'
     )
     _cache['s3_client'] = s3_client
     return s3_client
@@ -99,7 +100,6 @@ def create_presigned_url(bucket_name, object_name, expiration=3600):
     :return: Presigned URL as string. If error, returns None.
     """
 
-    # Generate a presigned URL for the S3 object
     s3_client = init_client()
     try:
         response = s3_client.generate_presigned_url(

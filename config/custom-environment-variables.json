@@ -3,7 +3,8 @@
   "redis": {
     "url": "REDIS_URL",
     "port": "REDIS_PORT",
-    "host": "REDIS_HOST"
+    "host": "REDIS_HOST",
+    "password": "REDIS_PASSWORD"
   },
   "storage": {
     "s3": {

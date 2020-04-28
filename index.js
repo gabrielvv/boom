@@ -30,8 +30,6 @@ app.use(bodyParser());
 app.use(cors({
   origin: '*',
 }));
-app.set('view engine', 'pug');
-app.use(express.static('public'));
 
 const splitHandler = (extractPayloadFn) => (req, res) => {
   const jobId = uuid.v4();
@@ -65,10 +63,11 @@ app.get('/', (req, res) => {
 
 app.get('/result/:id', (req, res) => {
   redisClient.get(req.params.id, (error, data) => {
-    if (!data) {
+    const dataObj = JSON.parse(data);
+
+    if (!dataObj) {
       res.redirect('/');
     }
-    const dataObj = JSON.parse(data);
 
     dataObj.object_list = dataObj.object_list.map((objectUrl) => {
       const match = objectUrl.match(/\/(\w+\.wav)\?/);

@@ -10,14 +10,21 @@ services:
       - docker.env
     ports:
       - "3000:3000"
+    depends_on:
+      - redis
 
+  # see https://github.com/deezer/spleeter/wiki/2.-Getting-started#using-docker-image
+  # TODO use volumes ??
   worker:
     image: worker
     build:
       context: ./worker
     env_file:
       - docker.env
+    depends_on:
+      - redis
 
+  # see https://github.com/docker-library/docs/blob/55604f7900451290144c0081e7f622297e519f61/redis/README.md#start-with-persistent-storage
   redis:
     image: redis
     ports:

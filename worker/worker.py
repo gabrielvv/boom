@@ -56,10 +56,7 @@ def job(options):
         logging.warn('Invalid email')
         return False
 
-    # TODO get s3 signed url
-    # https://bucket.s3.region.amazonaws.com/f/g/h => f/g/h
-    # input_object_name = input_file_url.split('/', 3)[-1]
-    s3_signed_url = create_presigned_url(bucket, input_object_name)
+    s3_signed_url = create_presigned_url(bucket, input_object_name, 60)
 
     separate(
         s3_signed_url,
@@ -92,7 +89,9 @@ def job(options):
         t = threading.Thread(target=upload_file, args=(
             local_path, bucket, object_name))
         thread_list.append(t)
-        object_list.append(create_presigned_url(bucket, object_name))
+        object_list.append(
+            create_presigned_url(bucket, object_name, Config.EXPIRATION)
+        )
 
     for t in thread_list:
         t.start()
@@ -102,7 +101,7 @@ def job(options):
     delete_directory(job_dir_name)
 
     # Store task status and file locations for mailing queue
-    r.setex(task_id, 3600 * 24, json.dumps({
+    r.setex(task_id, Config.EXPIRATION, json.dumps({
         'status': 'done',
         'object_list': object_list
     }))

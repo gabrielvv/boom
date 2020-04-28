@@ -1,3 +1,5 @@
+# see https://github.com/deezer/spleeter/wiki/2.-Getting-started#using-docker-image
+# see https://github.com/deezer/spleeter/blob/master/docker/python-3.7.dockerfile
 # For more information, please refer to https://aka.ms/vscode-docker-python
 FROM python:3.7
 
@@ -11,12 +13,16 @@ ENV PYTHONUNBUFFERED 1
 ADD requirements.txt .
 RUN python -m pip install -r requirements.txt
 
+# Install dependencies
+RUN apt-get update && apt-get install -y libsndfile1 ffmpeg
+
 WORKDIR /app
 ADD . /app
 
 # Switching to a non-root user, please refer to https://aka.ms/vscode-docker-python-user-rights
-RUN useradd appuser && chown -R appuser /app
-USER appuser
+# RUN useradd appuser && chown -R appuser /app
+# RUN chown -R appuser /usr/local/lib/python3.7
+# USER appuser
 
 ENV REDIS_HOST redis
 ENV REDIS_PORT 6379
@@ -29,7 +35,6 @@ ENV MAIL_API_SECRET mail_api_secret
 ENV MAIL_SENDER_ADDRESS poom-poom-tchak@protonmail.com
 ENV MAIL_SENDER_NAME Boom
 ENV FRONT_BASE_URL http://localhost:3000
-
 
 # During debugging, this entry point will be overridden. For more information, please refer to https://aka.ms/vscode-docker-python-debug
 CMD ["python", "worker.py"]

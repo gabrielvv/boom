@@ -18,3 +18,8 @@ https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html
 ### Set/Get lifecycle w/ cli
 
 https://docs.aws.amazon.com/AmazonS3/latest/dev/set-lifecycle-cli.html
+
+## Notes
+
+Expirations: redis key, s3 object, s3 presigned url
+La source de vérité vient de redis. Donc si redis renvoie

@@ -22,7 +22,6 @@
     "express": "^4.17.1",
     "express-validator": "^6.4.0",
     "lodash": "^4.17.15",
-    "pug": "^2.0.4",
     "redis": "^3.0.2",
     "uuid": "^7.0.3"
   },
