@@ -30,6 +30,7 @@ app.use(bodyParser());
 app.use(cors({
   origin: '*',
 }));
+app.use(express.static('public'));
 
 const splitHandler = (extractPayloadFn) => (req, res) => {
   const jobId = uuid.v4();
