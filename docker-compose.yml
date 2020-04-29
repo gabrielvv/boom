@@ -1,8 +1,14 @@
 version: "3.4"
 
 services:
-  boom:
-    image: app
+  app:
+    image: boom-static-website
+    build:
+      context: ./static
+    ports:
+      - "8080:80"
+  api:
+    image: boom-api
     build: .
     environment:
       NODE_ENV: production
@@ -16,7 +22,7 @@ services:
   # see https://github.com/deezer/spleeter/wiki/2.-Getting-started#using-docker-image
   # TODO use volumes ??
   worker:
-    image: worker
+    image: boom-worker
     build:
       context: ./worker
     env_file:

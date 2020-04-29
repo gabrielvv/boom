@@ -7,6 +7,7 @@
 
   <script src="https://unpkg.com/formiojs@latest/dist/formio.full.min.js"></script>
   <script src="https://unpkg.com/wavesurfer.js"></script>
+  <script src="https://unpkg.com/@funjs/route-parser@1.4.0/dist/index.umd.min.js"></script>
 
   <style>
     body {
@@ -29,7 +30,7 @@
     Formio.icons = 'fontawesome';
 
     Formio.setBaseUrl(baseUrl)
-    Formio.createForm(document.getElementById('formio'), {
+    const createForm = () => Formio.createForm(document.getElementById('formio'), {
       _id: '1234',
       display: 'form',
       title: 'foo',
@@ -120,24 +121,39 @@
         // Prevent the submission from going to the form.io server.
         form.nosubmit = true;
 
-        // Triggered when they click the submit button.
-        form.on('submit', function ({ data }) {
-          return fetch(`${baseUrl}/api/split`, {
-            body: {
-              ...data,
-              file: data.upload[0].key,
-            },
-            headers: {
-              'content-type': 'application/json'
-            },
-            method: 'POST',
-            mode: 'cors',
-          })
-            .then(response => {
-              form.emit('submitDone', data)
-            })
-        });
+        form.on('submit', ({ data }) => fetch(`${baseUrl}/api/split`, {
+          body: JSON.stringify({
+            ...data,
+            file: data.upload[0].key,
+          }),
+          headers: {
+            'content-type': 'application/json',
+          },
+          method: 'POST',
+          mode: 'cors',
+        })
+          .then(response => {
+            form.emit('submitDone', data)
+          }));
       });
+
+    const resultRoute = RouteParser('/result/:id')
+    const match = resultRoute.match(location.pathname);
+    if (match) {
+      fetch(`${baseUrl}/api/result/${match.id}`, {
+        method: 'GET',
+        mode: 'cors',
+      })
+        .then(response => {
+          if (response.status !== 200) {
+            // redirect
+            location.replace('/')
+          }
+          console.log(response.json)
+        });
+    } else {
+      createForm();
+    }
   </script>
 
   <!-- Github Corner -->

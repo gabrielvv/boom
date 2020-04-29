@@ -30,7 +30,6 @@ app.use(bodyParser());
 app.use(cors({
   origin: '*',
 }));
-app.use(express.static('public'));
 
 const splitHandler = (extractPayloadFn) => (req, res) => {
   const jobId = uuid.v4();
@@ -58,16 +57,12 @@ app.post('/form/:formId/storage/:provider', (req, res) => storageProviders[req.p
 
 app.get('/form/:formId/storage/:provider', (req, res) => storageProviders[req.params.provider].createPresignedGet(req, res));
 
-app.get('/', (req, res) => {
-  res.render('index');
-});
-
-app.get('/result/:id', (req, res) => {
+app.get('/api/result/:id', (req, res) => {
   redisClient.get(req.params.id, (error, data) => {
     const dataObj = JSON.parse(data);
 
     if (!dataObj) {
-      res.redirect('/');
+      return res.sendStatus(404);
     }
 
     dataObj.object_list = dataObj.object_list.map((objectUrl) => {
@@ -81,9 +76,7 @@ app.get('/result/:id', (req, res) => {
       };
     });
 
-    res.render('result', {
-      data: dataObj,
-    });
+    return res.json(dataObj);
   });
 });
 
