@@ -14,7 +14,7 @@ const createPresignedPost = (req, res) => {
   // see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#createPresignedPost-property
   return s3.createPresignedPost({
     Bucket: s3Config.bucket,
-    Expires: 60,
+    Expires: 3600,
     Fields: {
       key: requestBody.name,
       // extract filename from s3 object path

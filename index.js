@@ -42,7 +42,13 @@ const splitHandler = (extractPayloadFn) => (req, res) => {
     model,
     status: getStatusUrl(req, jobId),
   };
-  redisClient.rpush(redisConfig.queueName, JSON.stringify(payload));
+  redisClient.rpush(redisConfig.queueName, JSON.stringify(payload), (length) => {
+    redisClient.setex(jobId, redisConfig.expiration, JSON.stringify({
+      status: 'queueing',
+      pos: length - 1,
+    }));
+  });
+
   res.send(payload);
 };
 
@@ -64,6 +70,10 @@ app.get('/api/result/:id', (req, res) => {
 
     if (!dataObj) {
       return res.sendStatus(404);
+    }
+
+    if (dataObj.status !== 'done') {
+      return res.json(dataObj);
     }
 
     const findZip = (url) => url.includes('zip');

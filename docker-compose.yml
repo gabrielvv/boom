@@ -30,7 +30,7 @@ services:
     build:
       context: ./worker
     env_file:
-      - docker.env
+      - ./worker/docker.env
     volumes:
       - tmp:/app/tmp
       - models:/app/pretrained_models

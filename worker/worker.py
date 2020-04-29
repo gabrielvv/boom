@@ -59,12 +59,21 @@ def job(options):
 
     s3_signed_url = create_presigned_url(bucket, input_object_name, 60)
 
+    r.setex(task_id, Config.EXPIRATION, json.dumps({
+        'status': 'processing'
+    }))
+
     separate(
         s3_signed_url,
         # TODO save directly in s3
         job_dir_name,
         model
     )
+
+    r.setex(task_id, Config.EXPIRATION, json.dumps({
+        'status': 'upload',
+        'upload_progress': 0
+    }))
 
     input_file_name = input_object_name.split('/')[-1].split('.')[0]
     output_dir_name = path.join(job_dir_name, input_file_name)
@@ -112,7 +121,6 @@ def job(options):
 
     delete_directory(job_dir_name)
 
-    # Store task status and file locations for mailing queue
     r.setex(task_id, Config.EXPIRATION, json.dumps({
         'status': 'done',
         'object_list': object_list

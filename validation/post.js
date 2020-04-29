@@ -1,21 +1,25 @@
+const models = require('./models');
+
+const inOption = ['body'];
+
 module.exports = {
   email: {
-    in: ['body'],
+    in: inOption,
     errorMessage: 'Invalid email',
     isEmail: true,
     exists: true,
   },
   file: {
-    in: ['body'],
+    in: inOption,
     errorMessage: 'Invalid file',
     isURL: false,
     exists: true,
   },
   model: {
-    in: ['body'],
+    in: inOption,
     errorMessage: 'Invalid model',
     isIn: {
-      options: ['2stems', '4stems', '5stems'],
+      options: [models],
     },
     exists: true,
   },
