@@ -1,5 +1,9 @@
 version: "3.4"
 
+volumes:
+  tmp:
+  models:
+
 services:
   app:
     image: boom-static-website
@@ -27,6 +31,9 @@ services:
       context: ./worker
     env_file:
       - docker.env
+    volumes:
+      - tmp:/app/tmp
+      - models:/app/pretrained_models
     depends_on:
       - redis
 

@@ -32,7 +32,7 @@
       display: flex;
     }
 
-    ul#result .item__title > * {
+    ul#result .item__title>* {
       margin-right: 5px;
     }
 
@@ -57,6 +57,7 @@
       width: 80px;
       height: 80px;
     }
+
     .lds-facebook div {
       display: inline-block;
       position: absolute;
@@ -65,33 +66,45 @@
       background: aquamarine;
       animation: lds-facebook 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite;
     }
+
     .lds-facebook div:nth-child(1) {
       left: 8px;
       animation-delay: -0.24s;
     }
+
     .lds-facebook div:nth-child(2) {
       left: 32px;
       animation-delay: -0.12s;
     }
+
     .lds-facebook div:nth-child(3) {
       left: 56px;
       animation-delay: 0;
     }
+
     @keyframes lds-facebook {
       0% {
         top: 8px;
         height: 64px;
       }
-      50%, 100% {
+
+      50%,
+      100% {
         top: 24px;
         height: 32px;
       }
+    }
+
+    header {
+      display: flex;
     }
   </style>
 </head>
 
 <body>
-  <h1>Boom !</h1>
+  <header>
+    <h1>Boom !</h1>
+  </header>
   <div id="formio"></div>
   <ul id="result"></ul>
 
@@ -223,6 +236,23 @@
         })
         .then(data => {
           const ul = document.getElementById('result');
+          ul.insertAdjacentHTML('beforeend', `
+            <li>
+              <div class="item">
+                <div class="item__title">
+                  <div class="actions">
+                    <button class="btn btn-default boom-btn--play-pause" disabled><i class="fa fa-play"></i></button>
+                    <a href="${data.zip}" target="_blank" class="btn btn-default"><i class="fa fa-download"></i></a>
+                  </div>
+                  <h3>multitrack.zip</h3>
+                </div>
+              </div>
+            </li>
+          `);
+
+          let readyCount = 0;
+          const waves = [];
+
           data.object_list.forEach(object => {
             const li = document.createElement('li');
             li.insertAdjacentHTML('beforeend', `
@@ -251,9 +281,11 @@
               barHeight: 1, // the height of the wave
               barGap: null // the optional spacing between bars of the wave, if not provided will be calculated in legacy format
             });
+            waves.push(wavesurfer);
             wavesurfer.load(container.attributes['data-url'].value)
 
             wavesurfer.on('ready', function () {
+              readyCount++;
               console.log('ready', wavesurfer)
               li.querySelector('.spinner').remove();
               const btn = li.querySelector('.boom-btn--play-pause')
@@ -269,6 +301,22 @@
                 }
               };
               btn.onclick = playPause
+
+              if (readyCount === data.object_list.length) {
+                const multitrackBtn = ul.querySelector('.boom-btn--play-pause')
+                multitrackBtn.disabled = false;
+                const playPauseMultitrack = () => {
+                  const i = multitrackBtn.querySelector('i')
+                  if (i.className.includes('pause')) {
+                    waves.forEach(w => w.pause());
+                    i.className = 'fa fa-play'
+                  } else {
+                    waves.forEach(w => w.play());
+                    i.className = 'fa fa-pause'
+                  }
+                };
+                multitrackBtn.onclick = playPauseMultitrack
+              }
             });
           });
         });

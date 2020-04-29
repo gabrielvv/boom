@@ -34,7 +34,9 @@ ENV MAIL_API_KEY mail_api_key
 ENV MAIL_API_SECRET mail_api_secret
 ENV MAIL_SENDER_ADDRESS poom-poom-tchak@protonmail.com
 ENV MAIL_SENDER_NAME Boom
-ENV FRONT_BASE_URL http://localhost:3000
+ENV FRONT_BASE_URL http://localhost:8080
 
-# During debugging, this entry point will be overridden. For more information, please refer to https://aka.ms/vscode-docker-python-debug
+VOLUME /tmp
+VOLUME /pretrained_models
+
 CMD ["python", "worker.py"]

@@ -6,6 +6,7 @@ const {
 } = require('express-validator');
 const uuid = require('uuid');
 const redis = require('redis');
+const _ = require('lodash');
 const debug = require('debug')('boom');
 const { port, redis: redisConfig } = require('config');
 const { postSchema, getSchema, handleError } = require('./validation');
@@ -58,16 +59,16 @@ app.post('/form/:formId/storage/:provider', (req, res) => storageProviders[req.p
 app.get('/form/:formId/storage/:provider', (req, res) => storageProviders[req.params.provider].createPresignedGet(req, res));
 
 app.get('/api/result/:id', (req, res) => {
-  redisClient.get(req.params.id, (error, data) => {
-    const dataObj = JSON.parse(data);
+  redisClient.get(req.params.id, (error, dataStr) => {
+    const dataObj = JSON.parse(dataStr);
 
     if (!dataObj) {
       return res.sendStatus(404);
     }
 
     const findZip = (url) => url.includes('zip');
-    dataObj.zip = data.object_list.find(findZip);
-    dataObj.object_list = dataObj.object_list.filter(findZip).map((objectUrl) => {
+    dataObj.zip = dataObj.object_list.find(findZip);
+    dataObj.object_list = dataObj.object_list.filter(_.negate(findZip)).map((objectUrl) => {
       const match = objectUrl.match(/\/(\w+\.wav)\?/);
       if (!match || match.length < 2) {
         // TODO handle error
