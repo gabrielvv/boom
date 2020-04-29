@@ -14,7 +14,7 @@
       padding: 25px;
     }
 
-    a {
+    li {
       list-style: none;
     }
   </style>
@@ -23,13 +23,13 @@
 <body>
   <h1>Boom !</h1>
   <div id="formio"></div>
-  <div id="result"></div>
+  <ul id="result"></ul>
 
   <script type="text/javascript">
     const baseUrl = 'http://localhost:3000';
     Formio.icons = 'fontawesome';
 
-    Formio.setBaseUrl(baseUrl)
+    Formio.setBaseUrl(baseUrl);
     const createForm = () => Formio.createForm(document.getElementById('formio'), {
       _id: '1234',
       display: 'form',
@@ -147,9 +147,22 @@
         .then(response => {
           if (response.status !== 200) {
             // redirect
-            location.replace('/')
+            return location.replace('/')
           }
-          console.log(response.json)
+          return response.json();
+        })
+        .then(data => {
+          const ul = document.getElementById('result');
+          data.object_list.forEach(object => {
+            const li = document.createElement('li');
+            li.html = `
+            <div class="waveform"></div>
+            <div class="actions">
+
+            </div>
+            `
+            ul.append(li)
+          })
         });
     } else {
       createForm();
