@@ -14,8 +14,78 @@
       padding: 25px;
     }
 
-    li {
+    ul#result {
+      padding: 25px 0;
+    }
+
+    ul#result .item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    ul#result li {
       list-style: none;
+      margin-bottom: 25px;
+    }
+
+    ul#result .item__title {
+      display: flex;
+    }
+
+    ul#result .item__title > * {
+      margin-right: 5px;
+    }
+
+    ul#result .item__content {
+      display: flex;
+      position: relative;
+      align-items: center;
+    }
+
+    ul#result .spinner {
+      position: absolute;
+      left: 50%;
+    }
+
+    ul#result .waveform {
+      flex: 1;
+    }
+
+    .lds-facebook {
+      display: inline-block;
+      position: relative;
+      width: 80px;
+      height: 80px;
+    }
+    .lds-facebook div {
+      display: inline-block;
+      position: absolute;
+      left: 8px;
+      width: 16px;
+      background: aquamarine;
+      animation: lds-facebook 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite;
+    }
+    .lds-facebook div:nth-child(1) {
+      left: 8px;
+      animation-delay: -0.24s;
+    }
+    .lds-facebook div:nth-child(2) {
+      left: 32px;
+      animation-delay: -0.12s;
+    }
+    .lds-facebook div:nth-child(3) {
+      left: 56px;
+      animation-delay: 0;
+    }
+    @keyframes lds-facebook {
+      0% {
+        top: 8px;
+        height: 64px;
+      }
+      50%, 100% {
+        top: 24px;
+        height: 32px;
+      }
     }
   </style>
 </head>
@@ -155,14 +225,52 @@
           const ul = document.getElementById('result');
           data.object_list.forEach(object => {
             const li = document.createElement('li');
-            li.html = `
-            <div class="waveform"></div>
-            <div class="actions">
-
+            li.insertAdjacentHTML('beforeend', `
+            <div class="item">
+              <div class="item__title">
+                <div class="actions">
+                  <button class="btn btn-default boom-btn--play-pause" disabled><i class="fa fa-play"></i></button>
+                  <a href="${object.url}" target="_blank" class="btn btn-default"><i class="fa fa-download"></i></a>
+                </div>
+                <h3 >${object.name}</h3>
+              </div>
+              <div class="item__content">
+                <div class="spinner">
+                  <div class="lds-facebook"><div></div><div></div><div></div></div>
+                </div>
+                <div class="waveform" data-url="${object.url}"></div>
+              </div>
             </div>
-            `
+            `);
             ul.append(li)
-          })
+
+            const container = li.querySelector('.waveform')
+            const wavesurfer = WaveSurfer.create({
+              container,
+              barWidth: 2,
+              barHeight: 1, // the height of the wave
+              barGap: null // the optional spacing between bars of the wave, if not provided will be calculated in legacy format
+            });
+            wavesurfer.load(container.attributes['data-url'].value)
+
+            wavesurfer.on('ready', function () {
+              console.log('ready', wavesurfer)
+              li.querySelector('.spinner').remove();
+              const btn = li.querySelector('.boom-btn--play-pause')
+              btn.disabled = false
+              const playPause = () => {
+                const i = btn.querySelector('i')
+                if (i.className.includes('pause')) {
+                  wavesurfer.pause();
+                  i.className = 'fa fa-play'
+                } else {
+                  wavesurfer.play();
+                  i.className = 'fa fa-pause'
+                }
+              };
+              btn.onclick = playPause
+            });
+          });
         });
     } else {
       createForm();

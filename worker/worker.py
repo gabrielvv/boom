@@ -9,6 +9,7 @@ from config import Config
 import shutil
 from send_email import send_email
 import threading
+from zipfile import ZipFile
 
 if not Config.BUCKET_NAME:
     raise Exception('BUCKET_NAME not found')
@@ -75,6 +76,12 @@ def job(options):
 
     object_list = []
     thread_list = []
+
+    # version compressée
+    with ZipFile(f'{output_dir_name}/multitrack.zip', 'w') as zipObj:
+        for output_file_name in listdir(output_dir_name):
+            local_path = path.join(output_dir_name, output_file_name)
+            zipObj.write(local_path)
 
     # TODO: another queue/worker for this job ??
     for output_file_name in listdir(output_dir_name):
