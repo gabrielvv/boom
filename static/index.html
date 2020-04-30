@@ -36,40 +36,40 @@
       text-decoration: none;
     }
 
-    ul#result {
+    #result ul {
       padding: 25px 0;
     }
 
-    ul#result .item {
+    #result ul .item {
       display: flex;
       flex-direction: column;
     }
 
-    ul#result li {
+    #result ul li {
       list-style: none;
       margin-bottom: 25px;
     }
 
-    ul#result .item__title {
+    #result ul .item__title {
       display: flex;
     }
 
-    ul#result .item__title>* {
+    #result ul .item__title>* {
       margin-right: 5px;
     }
 
-    ul#result .item__content {
+    #result ul .item__content {
       display: flex;
       position: relative;
       align-items: center;
     }
 
-    ul#result .spinner {
+    #result ul .spinner {
       position: absolute;
       left: 50%;
     }
 
-    ul#result .waveform {
+    #result ul .waveform {
       flex: 1;
     }
 
@@ -119,16 +119,50 @@
 
     header {
       display: flex;
+      justify-content: center;
+    }
+
+    header .fa {
+      margin-right: 15px;
+    }
+
+    #form {
+      margin-top: 25px;
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    #formio {
+      min-width: 600px;
+    }
+
+    .boom-well {
+      margin-bottom: 2rem;
+    }
+
+    .boom-text-info {
+      margin-top: 1rem;
     }
   </style>
 </head>
 
 <body>
   <header>
-    <h1><a href="/">Boom !</a></h1>
+    <a href="/"></a>
+      <h1>
+        <i class="fa fa-music"></i>
+        Boom !
+      </h1>
+    </a>
   </header>
-  <div id="formio"></div>
-  <ul id="result"></ul>
+  <div id="form">
+    <div id="formio"></div>
+  </div>
+  <div id="result">
+    <ul></ul>
+  </div>
   <div id="progress"></div>
 
   <script type="text/javascript">
@@ -142,14 +176,40 @@
       title: 'foo',
       components: [
         {
+            label: "well",
+            tableView: false,
+            key: "well",
+            type: "well",
+            customClass: "boom-well",
+            input: false,
+            components: [
+              {
+                html: `
+                  <p style=\"text-align:center;\">
+                    Use this form to submit an audio file that will be processed by <a href="https://github.com/deezer/spleeter" target="_blank">Spleeter</a>
+                  </p>
+                `,
+                customClass: "boom-text-info",
+                label: "Content",
+                refreshOnChange: false,
+                tableView: false,
+                key: "content",
+                type: "content",
+                input: false
+              },
+            ]
+        },
+        {
           label: 'Email',
-          placeholder: 'Email',
-          hideLabel: true,
+          autofocus: true,
+          tooltip: 'Your email is only stored the time necessary to process your file<br/>You will receive a mail when your files are ready',
+          placeholder: 'user@example.com',
+          hideLabel: false,
           spellcheck: true,
           tableView: true,
           calculateServer: false,
           key: 'email',
-          type: 'textfield',
+          type: 'email',
           input: true,
           hideOnChildrenHidden: false,
           validate: {
@@ -159,6 +219,7 @@
         {
           label: 'Upload',
           filePattern: '.mp3,.wav',
+          description: 'Please submit only 1 file - only the first one will be processed',
           tableView: false,
           storage: 's3',
           uploadOnly: true,
@@ -182,20 +243,21 @@
           hideLabel: true,
         },
         {
-          label: 'Modèle',
+          label: 'Separation Model',
+          tooltip: 'More info about <b>models</b> in the spleeter <a href="https://github.com/deezer/spleeter#about" target="_blank">documentation</a>',
           tableView: true,
           data: {
             values: [
               {
-                label: '2 stems',
+                label: 'Vocals (singing voice) / accompaniment',
                 value: '2stems',
               },
               {
-                label: '4 stems',
+                label: 'Vocals / drums / bass / other',
                 value: '4stems',
               },
               {
-                label: '5 stems',
+                label: 'Vocals / drums / bass / piano / other',
                 value: '5stems',
               },
             ],
@@ -257,20 +319,20 @@
 
     const displayResult = data => {
       document.querySelector('#progress').remove();
-      const ul = document.getElementById('result');
+      const ul = document.querySelector('#result ul');
       ul.insertAdjacentHTML('beforeend', `
-            <li>
-              <div class="item">
-                <div class="item__title">
-                  <div class="actions">
-                    <button class="btn btn-default boom-btn--play-pause" disabled><i class="fa fa-play"></i></button>
-                    <a href="${data.zip}" target="_blank" class="btn btn-default"><i class="fa fa-download"></i></a>
-                  </div>
-                  <h3>multitrack.zip</h3>
-                </div>
+        <li>
+          <div class="item">
+            <div class="item__title">
+              <div class="actions">
+                <button class="btn btn-default boom-btn--play-pause" disabled><i class="fa fa-play"></i></button>
+                <a href="${data.zip}" target="_blank" class="btn btn-default"><i class="fa fa-download"></i></a>
               </div>
-            </li>
-          `);
+              <h3>multitrack.zip</h3>
+            </div>
+          </div>
+        </li>
+      `);
 
       let readyCount = 0;
       const waves = [];

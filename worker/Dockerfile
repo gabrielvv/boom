@@ -36,8 +36,6 @@ ENV MAIL_SENDER_ADDRESS poom-poom-tchak@protonmail.com
 ENV MAIL_SENDER_NAME Boom
 ENV FRONT_BASE_URL http://localhost:8080
 
-EXPOSE 80
-
 VOLUME /tmp
 VOLUME /pretrained_models
 
