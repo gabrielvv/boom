@@ -8,7 +8,10 @@ services:
   app:
     image: boom-static-website
     build:
-      context: ./static
+      context: ./public
+      args:
+        API_BASE_URL: http:\/\/localhost:3000
+
     ports:
       - "8080:80"
   api:

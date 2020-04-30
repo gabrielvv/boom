@@ -1,0 +1,21 @@
+name: github pages
+
+on:
+  push:
+    branches:
+      - master
+      - 'ci/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set API url
+        run:  sed -i "s/API_BASE_URL/$API_BASE_URL/" public/index.html
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public

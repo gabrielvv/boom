@@ -166,7 +166,7 @@
   <div id="progress"></div>
 
   <script type="text/javascript">
-    const baseUrl = 'http://localhost:3000';
+    const baseUrl = 'API_BASE_URL';
     Formio.icons = 'fontawesome';
 
     Formio.setBaseUrl(baseUrl);
@@ -219,7 +219,7 @@
         {
           label: 'Upload',
           filePattern: '.mp3,.wav',
-          description: 'Please submit only 1 file - only the first one will be processed',
+          description: 'Please submit 1 single file (only the first one will be processed)',
           tableView: false,
           storage: 's3',
           uploadOnly: true,
