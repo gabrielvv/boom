@@ -150,7 +150,7 @@
 
 <body>
   <header>
-    <a href="/"></a>
+    <a href="/boom">
       <h1>
         <i class="fa fa-music"></i>
         Boom !
@@ -306,7 +306,7 @@
             }
             return response.json();
           })
-          .then(data => location.replace(`/result/${data.id}`))
+          .then(data => location.replace(`/boom/result/${data.id}`))
 
         form.on('submit', onSubmit);
       });
@@ -420,7 +420,7 @@
       .then(response => {
         if (response.status !== 200) {
           // redirect
-          return location.replace('/')
+          return location.replace('/boom')
         }
         return response.json();
       })
