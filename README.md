@@ -9,19 +9,23 @@ npm i -g heroku
 heroku login
 heroku create
 heroku addons:create heroku-redis:hobby-dev -a <app-name>
+
+# set env var
+heroku config:set AWS_BUCKET=$BUCKET
 ```
 
 ## S3
 
-https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html
-
-### Set/Get lifecycle w/ cli
-
-https://docs.aws.amazon.com/AmazonS3/latest/dev/set-lifecycle-cli.html
+See https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html
 
 ```sh
-aws s3api put-bucket-lifecycle-configuration --bucket $BUCKET --lifecycle-configuration file://config/aws/s3-object-lifecycle.json
+# https://docs.aws.amazon.com/AmazonS3/latest/dev/set-lifecycle-cli.html
+aws s3api put-bucket-lifecycle-configuration --bucket $BUCKET --lifecycle-configuration file://config/aws/bucket-lifecycle.json
+
+# cors
+aws s3api put-bucket-cors --bucket $BUCKET --profile $PROFILE --cors-configuration file://config/aws/bucket-cors.json
 ```
+
 
 ## Notes
 
