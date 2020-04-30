@@ -5,7 +5,7 @@ name: Boom CI
 
 on:
   push:
-    branches: 
+    branches:
       - master
       - 'feat/**'
   pull_request:
@@ -41,6 +41,8 @@ jobs:
     - name: Test with unittest
       run: |
         python worker/test_s3.py
+      env:
+        REDIS_QUEUE: 'redis-queue'
 
   api:
 
