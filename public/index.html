@@ -136,10 +136,6 @@
       align-items: center;
     }
 
-    #formio {
-      min-width: 600px;
-    }
-
     .boom-well {
       margin-bottom: 2rem;
     }
@@ -147,6 +143,13 @@
     .boom-text-info {
       margin-top: 1rem;
     }
+
+    @media (max-width: 1024px) {
+      .boom-file .form-text {
+        display: none;
+      }
+    }
+
   </style>
 </head>
 
@@ -244,6 +247,7 @@
             type: 'file',
             input: true,
             hideLabel: true,
+            customClass: "boom-file",
           },
           {
             label: 'Separation Model',
@@ -252,7 +256,7 @@
             data: {
               values: [
                 {
-                  label: 'Vocals (singing voice) / accompaniment',
+                  label: 'Vocals / accompaniment',
                   value: '2stems',
                 },
                 {
@@ -459,7 +463,6 @@
       });
 
     const hashchange = function () {
-      console.log('hashchange', location.hash)
       const resultRoute = RouteParser('/result/:id')
       const match = resultRoute.match(location.hash.replace('#', ''));
       if (match) {
@@ -479,7 +482,7 @@
 
   <!-- Github Corner -->
 
-  <a href="https://github.com/gabrielvvBASE_PATH" class="github-corner" aria-label="View source on GitHub">
+  <a href="https://github.com/gabrielvv/boom" class="github-corner" aria-label="View source on GitHub">
     <svg width="80" height="80" viewBox="0 0 250 250"
       style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true">
       <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
