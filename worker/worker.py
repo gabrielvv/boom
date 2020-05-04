@@ -4,7 +4,7 @@ import redis
 from os import listdir, path
 import json
 from s3 import upload_file, create_presigned_url
-from separate import separate
+from split import split
 from config import Config
 import shutil
 from send_email import send_email
@@ -63,12 +63,20 @@ def job(options):
         'status': 'processing'
     }))
 
-    separate(
-        s3_signed_url,
-        # TODO save directly in s3
-        job_dir_name,
-        model
-    )
+    try:
+        split(
+            s3_signed_url,
+            # TODO save directly in s3
+            job_dir_name,
+            model
+        )
+    except Exception as e:
+        logging.error('Unable to split')
+        logging.error(e)
+        r.setex(task_id, Config.EXPIRATION, json.dumps({
+            'status': 'fail',
+            'error': e
+        }))
 
     r.setex(task_id, Config.EXPIRATION, json.dumps({
         'status': 'upload',

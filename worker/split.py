@@ -7,7 +7,7 @@ separator_list = {
 }
 
 
-def separate(file_name, dir_name, model='2stems'):
+def split(file_name, dir_name, model='2stems'):
     """
     see https://github.com/deezer/spleeter/wiki/4.-API-Reference#file-based-separation
     see https://github.com/deezer/spleeter/wiki/4.-API-Reference#asynchronous-audio-export
