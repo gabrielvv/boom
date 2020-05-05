@@ -1,0 +1,78 @@
+{
+    "family": "boom-worker",
+    "taskRoleArn": "ecsTaskExecutionRole",
+    "executionRoleArn": "ecsTaskExecutionRole",
+    "networkMode": "awsvpc",
+    "containerDefinitions": [
+        {
+            "name": "boom-worker",
+            "image": "gabrielvv/boom-worker",
+            "repositoryCredentials": {
+                "credentialsParameter": "<secret-arn>"
+            },
+            "portMappings": [
+                {
+                    "containerPort": 80,
+                    "hostPort": 80,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": true,
+            "entryPoint": [],
+            "command": [],
+            "environment": [],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "secrets": [
+                {
+                    "name": "AWS_ACCESS_KEY_ID",
+                    "valueFrom": "/boom/AWS_ACCESS_KEY_ID"
+                },
+                {
+                    "name": "AWS_SECRET_ACCESS_KEY",
+                    "valueFrom": "/boom/AWS_SECRET_ACCESS_KEY"
+                },
+                {
+                    "name": "MAIL_API_KEY",
+                    "valueFrom": "/boom/MAIL_API_KEY"
+                },
+                {
+                    "name": "MAIL_API_SECRET",
+                    "valueFrom": "/boom/MAIL_API_SECRET"
+                },
+                {
+                    "name": "REDIS_URL",
+                    "valueFrom": "/boom/REDIS_URL"
+                },
+                {
+                    "name": "FRONT_BASE_URL",
+                    "valueFrom": "/boom/FRONT_URL"
+                }
+            ],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/boom-worker",
+                    "awslogs-region": "<region>",
+                    "awslogs-stream-prefix": "ecs"
+                }
+            }
+        }
+    ],
+    "volumes": [
+        {
+            "name": "tmp",
+            "host": {}
+        },
+        {
+            "name": "pretrained_models",
+            "host": {}
+        }
+    ],
+    "placementConstraints": [],
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "1024",
+    "memory": "4096"
+}

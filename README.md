@@ -14,6 +14,14 @@ heroku addons:create heroku-redis:hobby-dev -a <app-name>
 heroku config:set AWS_BUCKET=$BUCKET
 ```
 
+## Docker
+
+```sh
+# Update docker image in docker hub
+sudo docker build -t gabrielvv/boom-worker:latest ./worker
+sudo docker push gabrielvv/boom-worker
+```
+
 ## AWS
 
 ### S3
@@ -40,6 +48,9 @@ aws ssm put-parameter --name "/boom/$parameter_name" --value $parameter_value --
 ```sh
 aws ecs deregister-task-definition --task-definition $TASK:$REVISION --profile $PROFILE
 aws logs create-log-group --log-group-name $LOG_GROUP_NAME --profile $PROFILE
+
+aws ecs register-task-definition --cli-input-json "$(cat config/aws/task-definition.json)"
+aws ecs create-service --cli-input-json $(cat config/aws/service-definition.json)
 ```
 
 ## Notes
