@@ -14,7 +14,9 @@ heroku addons:create heroku-redis:hobby-dev -a <app-name>
 heroku config:set AWS_BUCKET=$BUCKET
 ```
 
-## S3
+## AWS
+
+### S3
 
 See https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html
 
@@ -26,6 +28,19 @@ aws s3api put-bucket-lifecycle-configuration --bucket $BUCKET --lifecycle-config
 aws s3api put-bucket-cors --bucket $BUCKET --profile $PROFILE --cors-configuration file://config/aws/bucket-cors.json
 ```
 
+### Systems Manager - Parameter Store
+
+```sh
+# /!\ Make sure to target the proper REGION
+aws ssm put-parameter --name "/boom/$parameter_name" --value $parameter_value --type SecureString --profile $profile
+```
+
+### ECS
+
+```sh
+aws ecs deregister-task-definition --task-definition $TASK:$REVISION --profile $PROFILE
+aws logs create-log-group --log-group-name $LOG_GROUP_NAME --profile $PROFILE
+```
 
 ## Notes
 

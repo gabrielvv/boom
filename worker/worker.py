@@ -75,7 +75,7 @@ def job(options):
         logging.error(e)
         r.setex(task_id, Config.EXPIRATION, json.dumps({
             'status': 'fail',
-            'error': e
+            'error': str(e)
         }))
 
     r.setex(task_id, Config.EXPIRATION, json.dumps({
@@ -135,7 +135,7 @@ def job(options):
     }))
 
     try:
-        send_email(email, f'{Config.FRONT_BASE_URL}/result/{task_id}')
+        send_email(email, f'{Config.FRONT_BASE_URL}#result/{task_id}')
     except Exception as e:
         logging.error('Unable to send mail')
         logging.error(e)
