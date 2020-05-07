@@ -97,20 +97,22 @@ def job(options):
         task_id,
         input_file_name
     ))
-    object_list = []
-
-    if Config.FLAG_UPLOAD:
-        object_list += upload(
-            bucket, output_s3_dir_name, output_dir_name)
+    object_list = {}
+    waveforms = {}
 
     if Config.FLAG_WAVEFORM:
-        object_list += generate_waveforms(output_s3_dir_name, output_dir_name)
+        waveforms = generate_waveforms(output_dir_name)
+
+    if Config.FLAG_UPLOAD:
+        object_list = upload(
+            bucket, output_s3_dir_name, output_dir_name)
 
     delete_directory(job_dir_name)
 
     save_state({
         'status': 'done',
-        'object_list': object_list
+        'object_list': object_list,
+        'waveforms': waveforms
     })
 
     try:

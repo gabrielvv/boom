@@ -69,6 +69,7 @@ app.get('/form/:formId/storage/:provider', (req, res) => storageProviders[req.pa
 app.get('/api/result/:id', (req, res) => {
   redisClient.get(req.params.id, (error, dataStr) => {
     const dataObj = JSON.parse(dataStr);
+    debug(dataObj);
 
     if (!dataObj) {
       return res.sendStatus(404);
@@ -79,17 +80,24 @@ app.get('/api/result/:id', (req, res) => {
     }
 
     const findZip = (url) => url.includes('zip');
+    const findJson = (url) => url.includes('json');
     dataObj.zip = dataObj.object_list.find(findZip);
-    dataObj.object_list = dataObj.object_list.filter(_.negate(findZip)).map((objectUrl) => {
-      const match = objectUrl.match(/\/(\w+\.wav)\?/);
-      if (!match || match.length < 2) {
-        // TODO handle error
-      }
-      return {
-        url: objectUrl,
-        name: match[1],
-      };
-    });
+    dataObj.object_list = _.chain(dataObj.object_list)
+      .filter(_.negate(findZip))
+      .filter(_.negate(findJson))
+      .map((objectUrl, key) => {
+        const match = objectUrl.match(/\/(\w+\.wav)\?/);
+        if (!match || match.length < 2) {
+          // TODO handle error
+        }
+
+        return {
+          url: objectUrl,
+          name: match[1],
+          waveform: dataObj.waveforms[key],
+        };
+      })
+      .value();
 
     return res.json(dataObj);
   });

@@ -379,7 +379,10 @@
           barGap: null // the optional spacing between bars of the wave, if not provided will be calculated in legacy format
         });
         waves.push(wavesurfer);
-        wavesurfer.load(container.attributes['data-url'].value)
+        wavesurfer.load(
+          object.url,
+          object.waveform
+        )
 
         wavesurfer.on('ready', function () {
           readyCount++;
