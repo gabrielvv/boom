@@ -9,6 +9,8 @@ from config import Config
 import shutil
 from send_email import send_email
 from upload import upload
+import urllib.parse
+from audiowaveform.generate import generate_waveforms
 
 
 if not Config.BUCKET_NAME:
@@ -87,10 +89,22 @@ def job(options):
         'upload_progress': 0
     })
 
-    if Config.UPLOAD:
-        object_list = upload(task_id, bucket, input_object_name, job_dir_name)
-    else:
-        object_list = []
+    input_file_name = input_object_name.split('/')[-1].split('.')[0]
+    output_dir_name = path.join(
+        job_dir_name, urllib.parse.quote(input_file_name))
+    output_s3_dir_name = '/'.join((
+        'result',
+        task_id,
+        input_file_name
+    ))
+    object_list = []
+
+    if Config.FLAG_UPLOAD:
+        object_list += upload(
+            bucket, output_s3_dir_name, output_dir_name)
+
+    if Config.FLAG_WAVEFORM:
+        object_list += generate_waveforms(output_s3_dir_name, output_dir_name)
 
     delete_directory(job_dir_name)
 

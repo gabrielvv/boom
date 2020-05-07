@@ -5,15 +5,7 @@ from zipfile import ZipFile, ZIP_DEFLATED
 from config import Config
 
 
-def upload(task_id, bucket, input_object_name, job_dir_name):
-    input_file_name = input_object_name.split('/')[-1].split('.')[0]
-    output_dir_name = path.join(job_dir_name, input_file_name)
-    output_s3_dir_name = '/'.join((
-        'result',
-        task_id,
-        input_file_name
-    ))
-
+def upload(bucket, output_s3_dir_name, output_dir_name):
     object_list = []
     thread_list = []
 
