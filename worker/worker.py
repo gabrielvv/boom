@@ -1,15 +1,15 @@
 import logging
 import disable_tensorflow_warning
+from os import path
+from s3 import create_presigned_url
 import redis
-from os import listdir, path
 import json
-from s3 import upload_file, create_presigned_url
 from split import split
 from config import Config
 import shutil
 from send_email import send_email
-import threading
-from zipfile import ZipFile, ZIP_DEFLATED
+from upload import upload
+
 
 if not Config.BUCKET_NAME:
     raise Exception('BUCKET_NAME not found')
@@ -44,6 +44,9 @@ def job(options):
     logging.info('job with options=%s', options)
 
     task_id = options.get('id')
+
+    def save_state(d):
+        return r.setex(task_id, Config.EXPIRATION, json.dumps(d))
     job_dir_name = path.join('tmp', task_id)
     input_object_name = options.get('file')
     model = options.get('model')
@@ -57,11 +60,11 @@ def job(options):
         logging.warn('Invalid email')
         return False
 
-    s3_signed_url = create_presigned_url(bucket, input_object_name, 60)
+    s3_signed_url = create_presigned_url(bucket, input_object_name)
 
-    r.setex(task_id, Config.EXPIRATION, json.dumps({
+    save_state({
         'status': 'processing'
-    }))
+    })
 
     try:
         split(
@@ -73,72 +76,35 @@ def job(options):
     except Exception as e:
         logging.error('Unable to split')
         logging.error(e)
-        r.setex(task_id, Config.EXPIRATION, json.dumps({
+        save_state({
             'status': 'fail',
             'error': str(e)
-        }))
+        })
+        return
 
-    r.setex(task_id, Config.EXPIRATION, json.dumps({
+    save_state({
         'status': 'upload',
         'upload_progress': 0
-    }))
+    })
 
-    input_file_name = input_object_name.split('/')[-1].split('.')[0]
-    output_dir_name = path.join(job_dir_name, input_file_name)
-    output_s3_dir_name = '/'.join((
-        'result',
-        task_id,
-        input_file_name
-    ))
-
-    object_list = []
-    thread_list = []
-
-    # version compressée
-    with ZipFile(
-        f'{output_dir_name}/multitrack.zip', 'w',
-        ZIP_DEFLATED
-    ) as zipObj:
-        for output_file_name in listdir(output_dir_name):
-            if 'zip' in output_file_name:
-                continue
-            local_path = path.join(output_dir_name, output_file_name)
-            zipObj.write(local_path, output_file_name)
-
-    # TODO: another queue/worker for this job ??
-    for output_file_name in listdir(output_dir_name):
-        object_name = '/'.join((
-            output_s3_dir_name,
-            output_file_name
-        ))
-        local_path = path.join(output_dir_name, output_file_name)
-
-        # TODO progress callback
-        # see http://ls.pwd.io/2013/06/parallel-s3-uploads-using-boto-and-threads-in-python/
-        t = threading.Thread(target=upload_file, args=(
-            local_path, bucket, object_name))
-        thread_list.append(t)
-        object_list.append(
-            create_presigned_url(bucket, object_name, Config.EXPIRATION)
-        )
-
-    for t in thread_list:
-        t.start()
-    for t in thread_list:
-        t.join()
+    if Config.UPLOAD:
+        object_list = upload(task_id, bucket, input_object_name, job_dir_name)
+    else:
+        object_list = []
 
     delete_directory(job_dir_name)
 
-    r.setex(task_id, Config.EXPIRATION, json.dumps({
+    save_state({
         'status': 'done',
         'object_list': object_list
-    }))
+    })
 
     try:
         send_email(email, f'{Config.FRONT_BASE_URL}#result/{task_id}')
     except Exception as e:
         logging.error('Unable to send mail')
         logging.error(e)
+        return
 
 
 if __name__ == "__main__":

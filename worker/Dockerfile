@@ -35,6 +35,7 @@ ENV MAIL_API_SECRET mail_api_secret
 ENV MAIL_SENDER_ADDRESS poom-poom-tchak@protonmail.com
 ENV MAIL_SENDER_NAME Boom
 ENV FRONT_BASE_URL http://localhost:8080
+ENV UPLOAD=1
 
 VOLUME /tmp
 VOLUME /pretrained_models

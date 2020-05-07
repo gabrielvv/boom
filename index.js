@@ -32,6 +32,8 @@ app.use(cors({
   origin: '*',
 }));
 
+const getRedisQueue = (model) => `${redisConfig.queueName}:${model}`;
+
 const splitHandler = (extractPayloadFn) => (req, res) => {
   const jobId = uuid.v4();
   const { file, model, email } = extractPayloadFn(req);
@@ -42,7 +44,7 @@ const splitHandler = (extractPayloadFn) => (req, res) => {
     model,
     status: getStatusUrl(req, jobId),
   };
-  redisClient.rpush(redisConfig.queueName, JSON.stringify(payload), (length) => {
+  redisClient.rpush(getRedisQueue(model), JSON.stringify(payload), (length) => {
     redisClient.setex(jobId, redisConfig.expiration, JSON.stringify({
       status: 'queueing',
       pos: length - 1,

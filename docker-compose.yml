@@ -28,7 +28,7 @@ services:
 
   # see https://github.com/deezer/spleeter/wiki/2.-Getting-started#using-docker-image
   # TODO use volumes ??
-  worker:
+  worker_2stems:
     image: boom-worker
     build:
       context: ./worker
@@ -39,6 +39,37 @@ services:
       - models:/app/pretrained_models
     depends_on:
       - redis
+    environment:
+      - REDIS_QUEUE=queue:split:2stems
+
+  worker_4stems:
+    image: boom-worker
+    build:
+      context: ./worker
+    env_file:
+      - ./worker/docker.env
+    volumes:
+      - tmp:/app/tmp
+      - models:/app/pretrained_models
+    depends_on:
+      - redis
+    environment:
+      - REDIS_QUEUE=queue:split:4stems
+
+  worker_5stems:
+    image: boom-worker
+    build:
+      context: ./worker
+    env_file:
+      - ./worker/docker.env
+    volumes:
+      - tmp:/app/tmp
+      - models:/app/pretrained_models
+    depends_on:
+      - redis
+    environment:
+      - REDIS_QUEUE=queue:split:5stems
+
 
   # see https://github.com/docker-library/docs/blob/55604f7900451290144c0081e7f622297e519f61/redis/README.md#start-with-persistent-storage
   redis:

@@ -21,7 +21,16 @@
             "entryPoint": [],
             "command": [],
             "environment": [],
-            "mountPoints": [],
+            "mountPoints": [
+              {
+                "sourceVolume": "tmp",
+                "containerPath": "/app/tmp"
+              },
+              {
+                "sourceVolume": "pretrained_models",
+                "containerPath": "/app/pretrained_models"
+              }
+            ],
             "volumesFrom": [],
             "secrets": [
                 {

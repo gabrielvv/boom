@@ -50,7 +50,10 @@ aws ecs deregister-task-definition --task-definition $TASK:$REVISION --profile $
 aws logs create-log-group --log-group-name $LOG_GROUP_NAME --profile $PROFILE
 
 aws ecs register-task-definition --cli-input-json "$(cat config/aws/task-definition.json)"
-aws ecs create-service --cli-input-json $(cat config/aws/service-definition.json)
+aws ecs create-service --cli-input-json "$(cat config/aws/service-definition.json)"
+
+# restart service
+ecs update-service --force-new-deployment --service $SERVICE
 ```
 
 ## Notes
