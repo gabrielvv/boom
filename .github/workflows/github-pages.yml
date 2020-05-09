@@ -1,0 +1,32 @@
+name: github pages
+
+on:
+  push:
+    branches:
+      - master
+      - 'ci/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set API url
+        run:  |
+          sed -i "s/API_BASE_URL/$API_BASE_URL/" public/index.html
+          sed -i 's/BASE_PATH/\/boom/' public/index.html
+        env:
+          API_BASE_URL: ${{ secrets.API_BASE_URL }}
+
+      - name: Delete unecessary files
+        run: |
+          mkdir gh-pages
+          mv ./public/index.html ./gh-pages/index.html
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./gh-pages
+          enable_jekyll: true

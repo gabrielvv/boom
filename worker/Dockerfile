@@ -3,6 +3,21 @@
 # For more information, please refer to https://aka.ms/vscode-docker-python
 FROM python:3.7
 
+# Build audiowaveform from source
+RUN apt-get update && apt-get install -y git make cmake gcc g++ libmad0-dev \
+  libid3tag0-dev libsndfile1-dev libgd-dev libboost-filesystem-dev \
+  libboost-program-options-dev \
+  libboost-regex-dev
+
+RUN git clone https://github.com/bbc/audiowaveform.git \
+    && cd audiowaveform \
+    && mkdir build \
+    && cd build \
+    && cmake -D ENABLE_TESTS=0 .. \
+    && make \
+    && make install
+
+
 # Keeps Python from generating .pyc files in the container
 ENV PYTHONDONTWRITEBYTECODE 1
 
@@ -14,7 +29,8 @@ ADD requirements.txt .
 RUN python -m pip install -r requirements.txt
 
 # Install dependencies
-RUN apt-get update && apt-get install -y libsndfile1 ffmpeg
+RUN apt-get update \
+    && apt-get install -y libsndfile1 ffmpeg
 
 WORKDIR /app
 ADD . /app
@@ -35,6 +51,8 @@ ENV MAIL_API_SECRET mail_api_secret
 ENV MAIL_SENDER_ADDRESS poom-poom-tchak@protonmail.com
 ENV MAIL_SENDER_NAME Boom
 ENV FRONT_BASE_URL http://localhost:8080
+ENV FLAG_UPLOAD=1
+ENV FLAG_WAVEFORM=1
 
 VOLUME /tmp
 VOLUME /pretrained_models

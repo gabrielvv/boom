@@ -5,8 +5,15 @@
   "main": "index.js",
   "scripts": {
     "start": "node .",
-    "test": "jest",
-    "dev": "nodemon --watch",
+    "test": "npm run test:api && npm run test:worker",
+    "test:api": "jest",
+    "test:worker": "python worker/test_s3.py",
+    "dev": "concurrently \"npm run dev:app\" \"npm run dev:api\"",
+    "dev:api": "nodemon --watch",
+    "dev:app:cp": "mkdir -p ./public/dev && cp ./public/index.html ./public/dev/index.html",
+    "dev:app:sed": "sed -i \"s/API_BASE_URL/http:\\/\\/localhost:3000/\" public/dev/index.html && sed -i \"s/BASE_PATH/\\//\" public/dev/index.html",
+    "dev:app:serve": "http-serve ./public/dev",
+    "dev:app": "npm run dev:app:cp && npm run dev:app:sed && npm run dev:app:serve",
     "worker": "python worker/worker.py",
     "lint": "eslint --cache --fix ."
   },
@@ -26,9 +33,11 @@
     "uuid": "^7.0.3"
   },
   "devDependencies": {
+    "concurrently": "^5.2.0",
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.1.0",
     "eslint-plugin-import": "^2.20.2",
+    "http-serve": "^1.0.1",
     "husky": "^4.2.3",
     "jest": "^25.2.7",
     "lint-staged": "^10.1.2",

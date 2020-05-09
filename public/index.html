@@ -2,6 +2,8 @@
 
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://unpkg.com/formiojs@latest/dist/formio.full.min.css">
@@ -134,10 +136,6 @@
       align-items: center;
     }
 
-    #formio {
-      min-width: 600px;
-    }
-
     .boom-well {
       margin-bottom: 2rem;
     }
@@ -145,37 +143,45 @@
     .boom-text-info {
       margin-top: 1rem;
     }
+
+    @media (max-width: 1024px) {
+      .boom-file .form-text {
+        display: none;
+      }
+    }
+
   </style>
 </head>
 
 <body>
   <header>
-    <a href="/"></a>
+    <a href="BASE_PATH">
       <h1>
         <i class="fa fa-music"></i>
         Boom !
       </h1>
     </a>
   </header>
-  <div id="form">
-    <div id="formio"></div>
-  </div>
-  <div id="result">
-    <ul></ul>
-  </div>
-  <div id="progress"></div>
+  <main></main>
 
   <script type="text/javascript">
-    const baseUrl = 'http://localhost:3000';
+    const baseUrl = 'API_BASE_URL';
     Formio.icons = 'fontawesome';
 
     Formio.setBaseUrl(baseUrl);
-    const createForm = () => Formio.createForm(document.getElementById('formio'), {
-      _id: '1234',
-      display: 'form',
-      title: 'foo',
-      components: [
-        {
+    const createForm = () => {
+      document.querySelector('main').innerHTML = `
+        <div id="form">
+          <div id="formio"></div>
+        </div>
+      `;
+
+      Formio.createForm(document.getElementById('formio'), {
+        _id: '1234',
+        display: 'form',
+        title: 'foo',
+        components: [
+          {
             label: "well",
             tableView: false,
             key: "well",
@@ -198,118 +204,123 @@
                 input: false
               },
             ]
-        },
-        {
-          label: 'Email',
-          autofocus: true,
-          tooltip: 'Your email is only stored the time necessary to process your file<br/>You will receive a mail when your files are ready',
-          placeholder: 'user@example.com',
-          hideLabel: false,
-          spellcheck: true,
-          tableView: true,
-          calculateServer: false,
-          key: 'email',
-          type: 'email',
-          input: true,
-          hideOnChildrenHidden: false,
-          validate: {
-            required: true,
           },
-        },
-        {
-          label: 'Upload',
-          filePattern: '.mp3,.wav',
-          description: 'Please submit only 1 file - only the first one will be processed',
-          tableView: false,
-          storage: 's3',
-          uploadOnly: true,
-          // TODO use conf variables
-          dir: 'upload',
-          webcam: false,
-          validate: {
-            required: true,
-          },
-          fileTypes: [
-            {
-              label: '',
-              value: '',
+          {
+            label: 'Email',
+            autofocus: true,
+            tooltip: 'Your email is only stored the time necessary to process your file<br/>You will receive a mail when your files are ready',
+            placeholder: 'user@example.com',
+            attributes: {
+                autocomplete: "true"
             },
-          ],
-          fileMaxSize: '100MB',
-          calculateServer: false,
-          key: 'upload',
-          type: 'file',
-          input: true,
-          hideLabel: true,
-        },
-        {
-          label: 'Separation Model',
-          tooltip: 'More info about <b>models</b> in the spleeter <a href="https://github.com/deezer/spleeter#about" target="_blank">documentation</a>',
-          tableView: true,
-          data: {
-            values: [
+            hideLabel: false,
+            spellcheck: true,
+            tableView: true,
+            calculateServer: false,
+            key: 'email',
+            type: 'email',
+            input: true,
+            hideOnChildrenHidden: false,
+            validate: {
+              required: true,
+            },
+          },
+          {
+            label: 'Upload',
+            filePattern: '.mp3,.wav',
+            description: 'Please submit 1 single file (only the first one will be processed)',
+            tableView: false,
+            storage: 's3',
+            uploadOnly: true,
+            // TODO use conf variables
+            dir: 'upload',
+            webcam: false,
+            validate: {
+              required: true,
+            },
+            fileTypes: [
               {
-                label: 'Vocals (singing voice) / accompaniment',
-                value: '2stems',
-              },
-              {
-                label: 'Vocals / drums / bass / other',
-                value: '4stems',
-              },
-              {
-                label: 'Vocals / drums / bass / piano / other',
-                value: '5stems',
+                label: '',
+                value: '',
               },
             ],
+            fileMaxSize: '100MB',
+            calculateServer: false,
+            key: 'upload',
+            type: 'file',
+            input: true,
+            hideLabel: true,
+            customClass: "boom-file",
           },
-          selectThreshold: 0.3,
-          calculateServer: false,
-          validate: {
-            required: true,
+          {
+            label: 'Separation Model',
+            tooltip: 'More info about <b>models</b> in the spleeter <a href="https://github.com/deezer/spleeter#about" target="_blank">documentation</a>',
+            tableView: true,
+            data: {
+              values: [
+                {
+                  label: 'Vocals / accompaniment',
+                  value: '2stems',
+                },
+                {
+                  label: 'Vocals / drums / bass / other',
+                  value: '4stems',
+                },
+                {
+                  label: 'Vocals / drums / bass / piano / other',
+                  value: '5stems',
+                },
+              ],
+            },
+            selectThreshold: 0.3,
+            calculateServer: false,
+            validate: {
+              required: true,
+            },
+            key: 'model',
+            type: 'select',
+            indexeddb: {
+              filter: {},
+            },
+            input: true,
+            defaultValue: '2stems',
           },
-          key: 'model',
-          type: 'select',
-          indexeddb: {
-            filter: {},
+          {
+            type: 'button',
+            label: 'Submit',
+            key: 'submit',
+            disableOnInvalid: true,
+            input: true,
+            tableView: false,
           },
-          input: true,
-          defaultValue: '2stems',
-        },
-        {
-          type: 'button',
-          label: 'Submit',
-          key: 'submit',
-          disableOnInvalid: true,
-          input: true,
-          tableView: false,
-        },
-      ],
-    })
-      .then(function (form) {
-        // Prevent the submission from going to the form.io server.
-        form.nosubmit = true;
+        ],
+      })
+        .then(function (form) {
+          // Prevent the submission from going to the form.io server.
+          form.nosubmit = true;
 
-        const onSubmit = ({ data }) => fetch(`${baseUrl}/api/split`, {
-          body: JSON.stringify({
-            ...data,
-            file: data.upload[0].key,
-          }),
-          headers: {
-            'content-type': 'application/json',
-          },
-          method: 'POST',
-          mode: 'cors',
-        })
-          .then(response => {
-            if (response.status !== 200) {
-              // TODO handle error
-            }
-            return response.json();
+          const onSubmit = ({ data }) => fetch(`${baseUrl}/api/split`, {
+            body: JSON.stringify({
+              ...data,
+              file: data.upload[0].key,
+            }),
+            headers: {
+              'content-type': 'application/json',
+            },
+            method: 'POST',
+            mode: 'cors',
           })
-          .then(data => location.replace(`/result/${data.id}`))
+            .then(response => {
+              if (response.status !== 200) {
+                // TODO handle error
+              }
+              return response.json();
+            })
+            .then(data => location.replace(`BASE_PATH#/result/${data.id}`))
 
-        form.on('submit', onSubmit);
-      });
+          form.on('submit', onSubmit);
+        });
+    }
 
     const spinner = `
       <div class="spinner">
@@ -318,7 +329,11 @@
     `;
 
     const displayResult = data => {
-      document.querySelector('#progress').remove();
+      document.querySelector('main').innerHTML = `
+        <div id="result">
+          <ul></ul>
+        </div>
+      `;
       const ul = document.querySelector('#result ul');
       ul.insertAdjacentHTML('beforeend', `
         <li>
@@ -337,7 +352,7 @@
       let readyCount = 0;
       const waves = [];
 
-      data.object_list.forEach(object => {
+      data.objectList.forEach(object => {
         const li = document.createElement('li');
         li.innerHTML = `
           <div class="item">
@@ -364,7 +379,12 @@
           barGap: null // the optional spacing between bars of the wave, if not provided will be calculated in legacy format
         });
         waves.push(wavesurfer);
-        wavesurfer.load(container.attributes['data-url'].value)
+        wavesurfer.load(
+          object.url,
+          object.waveform
+        )
+        // FIXME see https://github.com/katspaugh/wavesurfer.js/issues/1924
+        wavesurfer.seekTo(0)
 
         wavesurfer.on('ready', function () {
           readyCount++;
@@ -383,7 +403,7 @@
           };
           btn.onclick = playPause
 
-          if (readyCount === data.object_list.length) {
+          if (readyCount === data.objectList.length) {
             const multitrackBtn = ul.querySelector('.boom-btn--play-pause')
             multitrackBtn.disabled = false;
             const playPauseMultitrack = () => {
@@ -403,6 +423,10 @@
     }; // displayResult
 
     const displayProgress = data => {
+      document.querySelector('main').innerHTML = `
+        <div id="progress"></div>
+      `;
+
       const progress = document.querySelector('#progress');
       progress.innerHTML = `
         <div>Your file is currently being processed</div>
@@ -411,42 +435,57 @@
       `;
     }
 
-    let polling = true;
-    const pollingInterval = 10000;
-    const fetchResult = () => fetch(`${baseUrl}/api/result/${match.id}`, {
+    const polling = {
+      on: true,
+      interval: 10000
+    };
+    const fetchResult = (id) => fetch(`${baseUrl}/api/result/${id}`, {
       method: 'GET',
       mode: 'cors',
     })
       .then(response => {
         if (response.status !== 200) {
-          // redirect
-          return location.replace('/')
+          // redirectfetchResult
+          return location.replace('BASE_PATH')
         }
         return response.json();
       })
       .then(data => {
-        if (data.status === 'done') {
-          polling = false;
+        if (data && data.status === 'done') {
+          polling.on = false;
           displayResult(data);
         } else {
           displayProgress(data);
         }
       })
       .then(() => {
-        if (polling) {
-          setTimeout(() => {
-            fetchResult();
-          }, pollingInterval)
+        if (polling.on) {
+          const p = setTimeout(() => {
+            if (polling.on) {
+              fetchResult(id);
+            } else {
+              clearTimeout(p);
+            }
+          }, polling.interval)
         }
       });
 
-    const resultRoute = RouteParser('/result/:id')
-    const match = resultRoute.match(location.pathname);
-    if (match) {
-      fetchResult()
-    } else {
-      createForm();
+    const hashchange = function () {
+      const resultRoute = RouteParser('/result/:id')
+      const match = resultRoute.match(location.hash.replace('#', ''));
+      if (match) {
+        polling.on = true;
+        fetchResult(match.id)
+      } else {
+        polling.on = false;
+        createForm();
+      }
     }
+
+    window.onhashchange = hashchange
+
+    // init
+    hashchange();
   </script>
 
   <!-- Github Corner -->

@@ -5,8 +5,8 @@ class Config():
     REDIS_URL = environ.get('REDIS_URL')
     REDIS_HOST = environ.get('REDIS_HOST')
     REDIS_PORT = environ.get('REDIS_PORT')
-    REDIS_QUEUE = environ.get('REDIS_QUEUE')
-    REDIS_RETRY_QUEUE = environ.get('REDIS_QUEUE') + ':retry'
+    REDIS_QUEUE = environ.get('REDIS_QUEUE', 'queue:split')
+    REDIS_RETRY_QUEUE = environ.get('REDIS_QUEUE', 'queue:split') + ':retry'
     BUCKET_NAME = environ.get('BUCKET_NAME')
     AWS_ACCESS_KEY = environ.get('AWS_ACCESS_KEY_ID')
     AWS_SECRET_KEY = environ.get('AWS_SECRET_ACCESS_KEY')
@@ -17,3 +17,5 @@ class Config():
     MAIL_SENDER_NAME = environ.get('MAIL_SENDER_NAME')
     FRONT_BASE_URL = environ.get('FRONT_BASE_URL')
     EXPIRATION = 3600 * 24
+    FLAG_UPLOAD = int(environ.get('FLAG_UPLOAD', '1'))
+    FLAG_WAVEFORM = int(environ.get('FLAG_WAVEFORM', '1'))

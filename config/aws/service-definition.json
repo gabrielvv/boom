@@ -1,0 +1,26 @@
+{
+    "cluster": "default",
+    "serviceName": "boom-service",
+    "taskDefinition": "boom-worker",
+    "loadBalancers": [],
+    "serviceRegistries": [],
+    "desiredCount": 1,
+    "launchType": "FARGATE",
+    "platformVersion": "LATEST",
+    "deploymentConfiguration": {
+        "maximumPercent": 100,
+        "minimumHealthyPercent": 0
+    },
+    "networkConfiguration": {
+        "awsvpcConfiguration": {
+            "subnets": [
+                ""
+            ],
+            "securityGroups": [
+                ""
+            ],
+            "assignPublicIp": "DISABLED"
+        }
+    },
+    "schedulingStrategy": "REPLICA"
+}

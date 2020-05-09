@@ -32,6 +32,8 @@ app.use(cors({
   origin: '*',
 }));
 
+const getRedisQueue = (model) => `${redisConfig.queueName}:${model}`;
+
 const splitHandler = (extractPayloadFn) => (req, res) => {
   const jobId = uuid.v4();
   const { file, model, email } = extractPayloadFn(req);
@@ -42,7 +44,7 @@ const splitHandler = (extractPayloadFn) => (req, res) => {
     model,
     status: getStatusUrl(req, jobId),
   };
-  redisClient.rpush(redisConfig.queueName, JSON.stringify(payload), (length) => {
+  redisClient.rpush(getRedisQueue(model), JSON.stringify(payload), (length) => {
     redisClient.setex(jobId, redisConfig.expiration, JSON.stringify({
       status: 'queueing',
       pos: length - 1,
@@ -64,6 +66,8 @@ app.post('/form/:formId/storage/:provider', (req, res) => storageProviders[req.p
 
 app.get('/form/:formId/storage/:provider', (req, res) => storageProviders[req.params.provider].createPresignedGet(req, res));
 
+const extractWaveformData = (obj, waveformName) => JSON.parse(obj.waveforms[waveformName]).data;
+
 app.get('/api/result/:id', (req, res) => {
   redisClient.get(req.params.id, (error, dataStr) => {
     const dataObj = JSON.parse(dataStr);
@@ -77,19 +81,33 @@ app.get('/api/result/:id', (req, res) => {
     }
 
     const findZip = (url) => url.includes('zip');
-    dataObj.zip = dataObj.object_list.find(findZip);
-    dataObj.object_list = dataObj.object_list.filter(_.negate(findZip)).map((objectUrl) => {
-      const match = objectUrl.match(/\/(\w+\.wav)\?/);
-      if (!match || match.length < 2) {
-        // TODO handle error
-      }
-      return {
-        url: objectUrl,
-        name: match[1],
-      };
-    });
+    const findJson = (url) => url.includes('json');
+    const zip = _.find(dataObj.object_list, findZip);
+    const objectList = _.chain(dataObj.object_list)
+      .filter(_.negate(findZip))
+      .filter(_.negate(findJson))
+      .map((objectUrl) => {
+        const match = objectUrl.match(/\/(\w+\.wav)\?/);
+        if (!match || match.length < 2) {
+          // TODO handle error
+        }
 
-    return res.json(dataObj);
+        const name = match[1];
+        const waveform = extractWaveformData(dataObj, name);
+
+        return {
+          url: objectUrl,
+          name,
+          waveform,
+        };
+      })
+      .value();
+
+    return res.json({
+      status: dataObj.status,
+      objectList,
+      zip,
+    });
   });
 });
 

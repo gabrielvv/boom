@@ -33,7 +33,9 @@ describe('/api', () => {
 
       expect(redisClient.rpush).toHaveBeenCalledTimes(1);
       expect(redisClient.rpush).toHaveBeenCalledWith(
-        redisConfig.queueName, JSON.stringify(expectedPayload),
+        `${redisConfig.queueName}:${model}`,
+        JSON.stringify(expectedPayload),
+        expect.any(Function),
       );
     });
 
