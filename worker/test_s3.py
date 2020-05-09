@@ -24,9 +24,9 @@ class TestS3Methods(unittest.TestCase):
     @patch('s3.init_client', return_value=fake_client)
     def test_download_file(self, client):
         res = download_file('bucket', 'object_name')
-        self.assertEqual(res, True)
+        self.assertEqual(res, 'downloads/object_name')
         fake_client.download_file.assert_called_once_with(
-            'bucket', 'object_name', 'object_name')
+            'bucket', 'object_name', 'downloads/object_name')
 
     @patch('s3.init_client', return_value=fake_client)
     def test_upload_file(self, client):

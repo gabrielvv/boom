@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "node .",
-    "test": "jest",
+    "test": "npm run test:api && npm run test:worker",
+    "test:api": "jest",
+    "test:worker": "python worker/test_s3.py",
     "dev": "concurrently \"npm run dev:app\" \"npm run dev:api\"",
     "dev:api": "nodemon --watch",
     "dev:app:cp": "mkdir -p ./public/dev && cp ./public/index.html ./public/dev/index.html",
