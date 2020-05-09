@@ -75,7 +75,12 @@
       flex: 1;
     }
 
+    #result ul .waveform.loading {
+      opacity: 0.4;
+    }
+
     .lds-facebook {
+      z-index: 10;
       display: inline-block;
       position: relative;
       width: 80px;
@@ -365,7 +370,7 @@
             </div>
             <div class="item__content">
               ${spinner}
-              <div class="waveform" data-url="${object.url}"></div>
+              <div class="waveform loading" data-url="${object.url}"></div>
             </div>
           </div>
         `;
@@ -387,6 +392,7 @@
         wavesurfer.seekTo(0)
 
         wavesurfer.on('ready', function () {
+          container.className = 'waveform';
           readyCount++;
           li.querySelector('.spinner').remove();
           const btn = li.querySelector('.boom-btn--play-pause')

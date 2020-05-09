@@ -87,7 +87,7 @@ app.get('/api/result/:id', (req, res) => {
       .filter(_.negate(findZip))
       .filter(_.negate(findJson))
       .map((objectUrl) => {
-        const match = objectUrl.match(/\/(\w+\.wav)\?/);
+        const match = objectUrl.match(/\/(\w+\.(wav|mp3))\?/);
         if (!match || match.length < 2) {
           // TODO handle error
         }

@@ -14,4 +14,5 @@ def split(file_name, dir_name, model='2stems'):
     )
     stft_backend = 'auto'
     separator = Separator('spleeter:' + model, stft_backend=stft_backend)
-    return separator.separate_to_file(file_name, dir_name, synchronous=True)
+    return separator.separate_to_file(
+        file_name, dir_name, synchronous=True, codec='mp3')
