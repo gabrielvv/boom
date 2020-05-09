@@ -352,7 +352,7 @@
       let readyCount = 0;
       const waves = [];
 
-      data.object_list.forEach(object => {
+      data.objectList.forEach(object => {
         const li = document.createElement('li');
         li.innerHTML = `
           <div class="item">
@@ -383,6 +383,8 @@
           object.url,
           object.waveform
         )
+        // FIXME see https://github.com/katspaugh/wavesurfer.js/issues/1924
+        wavesurfer.seekTo(0)
 
         wavesurfer.on('ready', function () {
           readyCount++;
@@ -401,7 +403,7 @@
           };
           btn.onclick = playPause
 
-          if (readyCount === data.object_list.length) {
+          if (readyCount === data.objectList.length) {
             const multitrackBtn = ul.querySelector('.boom-btn--play-pause')
             multitrackBtn.disabled = false;
             const playPauseMultitrack = () => {

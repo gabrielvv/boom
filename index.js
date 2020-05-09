@@ -66,10 +66,11 @@ app.post('/form/:formId/storage/:provider', (req, res) => storageProviders[req.p
 
 app.get('/form/:formId/storage/:provider', (req, res) => storageProviders[req.params.provider].createPresignedGet(req, res));
 
+const extractWaveformData = (obj, waveformName) => JSON.parse(obj.waveforms[waveformName]).data;
+
 app.get('/api/result/:id', (req, res) => {
   redisClient.get(req.params.id, (error, dataStr) => {
     const dataObj = JSON.parse(dataStr);
-    debug(dataObj);
 
     if (!dataObj) {
       return res.sendStatus(404);
@@ -81,25 +82,32 @@ app.get('/api/result/:id', (req, res) => {
 
     const findZip = (url) => url.includes('zip');
     const findJson = (url) => url.includes('json');
-    dataObj.zip = dataObj.object_list.find(findZip);
-    dataObj.object_list = _.chain(dataObj.object_list)
+    const zip = _.find(dataObj.object_list, findZip);
+    const objectList = _.chain(dataObj.object_list)
       .filter(_.negate(findZip))
       .filter(_.negate(findJson))
-      .map((objectUrl, key) => {
+      .map((objectUrl) => {
         const match = objectUrl.match(/\/(\w+\.wav)\?/);
         if (!match || match.length < 2) {
           // TODO handle error
         }
 
+        const name = match[1];
+        const waveform = extractWaveformData(dataObj, name);
+
         return {
           url: objectUrl,
-          name: match[1],
-          waveform: dataObj.waveforms[key],
+          name,
+          waveform,
         };
       })
       .value();
 
-    return res.json(dataObj);
+    return res.json({
+      status: dataObj.status,
+      objectList,
+      zip,
+    });
   });
 });
 
