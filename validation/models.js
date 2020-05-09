@@ -1,1 +1,5 @@
-module.exports = ['2stems', '4stems', '5stems'];
+module.exports = [
+  '2stems',
+  // '4stems',
+  // '5stems',
+];

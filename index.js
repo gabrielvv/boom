@@ -27,7 +27,10 @@ redisClient.on('error', (error) => {
 });
 
 const app = express();
-app.use(bodyParser());
+// see https://github.com/expressjs/body-parser#bodyparserjsonoptions
+app.use(bodyParser({
+  limit: '50kb',
+}));
 app.use(cors({
   origin: '*',
 }));
