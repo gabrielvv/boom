@@ -22,9 +22,12 @@ QUIT = False
 bucket = Config.BUCKET_NAME
 redis_queue = Config.REDIS_QUEUE
 redis_retry_queue = Config.REDIS_RETRY_QUEUE
-logging.basicConfig(level=logging.INFO)
 
-logging.info('REDIS_HOST=%s', Config.REDIS_HOST)
+logging.basicConfig(level=logging.INFO)
+logging.debug(f'redis_queue={redis_queue}')
+logging.debug('REDIS_HOST=%s', Config.REDIS_HOST)
+logging.debug('REDIS_URL=%s', Config.REDIS_URL)
+
 if Config.REDIS_URL:
     r = redis.Redis.from_url(Config.REDIS_URL)
 else:

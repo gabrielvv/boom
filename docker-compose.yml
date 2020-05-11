@@ -27,7 +27,6 @@ services:
       - redis
 
   # see https://github.com/deezer/spleeter/wiki/2.-Getting-started#using-docker-image
-  # TODO use volumes ??
   worker_2stems:
     image: boom-worker
     build:

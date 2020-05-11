@@ -65,7 +65,6 @@ def upload_file(file_name, bucket, object_name=None):
         object_name = file_name
 
     # Upload the file
-    # TODO add expiration
     try:
         s3_client.upload_file(
             file_name,
