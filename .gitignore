@@ -2,6 +2,7 @@ s3-tuto/
 pretrained_models/
 tmp/
 public/dev
+.aws
 
 # redis
 dump.rdb

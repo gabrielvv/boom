@@ -8,7 +8,7 @@
             "name": "boom-worker",
             "image": "gabrielvv/boom-worker",
             "repositoryCredentials": {
-                "credentialsParameter": "<secret-arn>"
+                "credentialsParameter": "$SECRET_ARN"
             },
             "portMappings": [
                 {
@@ -62,7 +62,7 @@
                 "logDriver": "awslogs",
                 "options": {
                     "awslogs-group": "/ecs/boom-worker",
-                    "awslogs-region": "<region>",
+                    "awslogs-region": "$AWS_REGION",
                     "awslogs-stream-prefix": "ecs"
                 }
             }

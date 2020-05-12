@@ -1,7 +1,7 @@
 {
     "cluster": "default",
     "serviceName": "boom-service",
-    "taskDefinition": "boom-worker",
+    "taskDefinition": "$TASK_DEF_ARN",
     "loadBalancers": [],
     "serviceRegistries": [],
     "desiredCount": 1,
@@ -14,12 +14,10 @@
     "networkConfiguration": {
         "awsvpcConfiguration": {
             "subnets": [
-                ""
+              "subnet-02f3cb8d01f7ab644"
             ],
-            "securityGroups": [
-                ""
-            ],
-            "assignPublicIp": "DISABLED"
+            "securityGroups": [],
+            "assignPublicIp": "ENABLED"
         }
     },
     "schedulingStrategy": "REPLICA"

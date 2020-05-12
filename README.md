@@ -49,8 +49,10 @@ aws ssm put-parameter --name "/boom/$parameter_name" --value $parameter_value --
 aws ecs deregister-task-definition --task-definition $TASK:$REVISION --profile $PROFILE
 aws logs create-log-group --log-group-name $LOG_GROUP_NAME --profile $PROFILE
 
-aws ecs register-task-definition --cli-input-json "$(cat config/aws/task-definition.json)"
-aws ecs create-service --cli-input-json "$(cat config/aws/service-definition.json)"
+TASK_DEF=$(sed -e "s#\$SECRET_ARN#$SECRET_ARN#" -e "s#\$AWS_REGION#$AWS_REGION#" config/aws/task-definition.json);
+TASK_DEF_ARN=$(aws ecs register-task-definition --cli-input-json $TASK_DEF | jq -r '.taskDefinition.taskDefinitionArn');
+SERVICE_DEF=$(sed "s#\$TASK_DEF_ARN#$TASK_DEF_ARN#" config/aws/service-definition.json);
+aws ecs create-service --cli-input-json $SERVICE_DEF > .aws/service.json;
 
 # restart service
 ecs update-service --force-new-deployment --service $SERVICE
