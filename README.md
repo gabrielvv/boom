@@ -46,16 +46,32 @@ aws ssm put-parameter --name "/boom/$parameter_name" --value $parameter_value --
 ### ECS
 
 ```sh
-aws ecs deregister-task-definition --task-definition $TASK:$REVISION --profile $PROFILE
-aws logs create-log-group --log-group-name $LOG_GROUP_NAME --profile $PROFILE
+LOGS_GROUP=/ecs/boom-worker
+aws logs create-log-group --log-group-name $LOGS_GROUP --profile $PROFILE
 
-TASK_DEF=$(sed -e "s#\$SECRET_ARN#$SECRET_ARN#" -e "s#\$AWS_REGION#$AWS_REGION#" config/aws/task-definition.json);
+# register task
+TASK_DEF=$(sed -e "s#\$SECRET_ARN#$SECRET_ARN#" -e "s#\$AWS_REGION#$AWS_REGION#" -e "s#\$LOGS_GROUP#$LOGS_GROUP#" config/aws/task-definition.json);
 TASK_DEF_ARN=$(aws ecs register-task-definition --cli-input-json $TASK_DEF | jq -r '.taskDefinition.taskDefinitionArn');
+# register service
 SERVICE_DEF=$(sed "s#\$TASK_DEF_ARN#$TASK_DEF_ARN#" config/aws/service-definition.json);
 aws ecs create-service --cli-input-json $SERVICE_DEF > .aws/service.json;
 
 # restart service
-ecs update-service --force-new-deployment --service $SERVICE
+ecs update-service --force-new-deployment --service $SERVICE_NAME
+# update service task definition
+aws ecs update-service --service $SERVICE_NAME --task-definition $TASK:$REVISION --force-new-deployment
+
+# delete service
+SERVICE_NAME=boom-service
+aws ecs update-service --service $SERVICE_NAME --desired-count 0
+aws ecs delete-service --service $SERVICE_NAME
+# delete task (each revision must be deleted)
+TASK_NAME=boom-worker
+for REVISION in {1..19};
+do aws ecs deregister-task-definition --task-definition $TASK_NAME:$REVISION;
+done
+
+# dere
 ```
 
 ## Notes

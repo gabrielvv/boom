@@ -1,87 +1,92 @@
 {
-    "family": "boom-worker",
-    "taskRoleArn": "ecsTaskExecutionRole",
-    "executionRoleArn": "ecsTaskExecutionRole",
-    "networkMode": "awsvpc",
-    "containerDefinitions": [
+  "family": "boom-worker",
+  "taskRoleArn": "ecsTaskExecutionRole",
+  "executionRoleArn": "ecsTaskExecutionRole",
+  "networkMode": "awsvpc",
+  "containerDefinitions": [
+    {
+      "name": "boom-worker",
+      "image": "gabrielvv/boom-worker",
+      "repositoryCredentials": {
+        "credentialsParameter": "$SECRET_ARN"
+      },
+      "portMappings": [
         {
-            "name": "boom-worker",
-            "image": "gabrielvv/boom-worker",
-            "repositoryCredentials": {
-                "credentialsParameter": "$SECRET_ARN"
-            },
-            "portMappings": [
-                {
-                    "containerPort": 80,
-                    "hostPort": 80,
-                    "protocol": "tcp"
-                }
-            ],
-            "essential": true,
-            "entryPoint": [],
-            "command": [],
-            "environment": [],
-            "mountPoints": [
-              {
-                "sourceVolume": "tmp",
-                "containerPath": "/app/tmp"
-              },
-              {
-                "sourceVolume": "pretrained_models",
-                "containerPath": "/app/pretrained_models"
-              }
-            ],
-            "volumesFrom": [],
-            "secrets": [
-                {
-                    "name": "AWS_ACCESS_KEY_ID",
-                    "valueFrom": "/boom/AWS_ACCESS_KEY_ID"
-                },
-                {
-                    "name": "AWS_SECRET_ACCESS_KEY",
-                    "valueFrom": "/boom/AWS_SECRET_ACCESS_KEY"
-                },
-                {
-                    "name": "MAIL_API_KEY",
-                    "valueFrom": "/boom/MAIL_API_KEY"
-                },
-                {
-                    "name": "MAIL_API_SECRET",
-                    "valueFrom": "/boom/MAIL_API_SECRET"
-                },
-                {
-                    "name": "REDIS_URL",
-                    "valueFrom": "/boom/REDIS_URL"
-                },
-                {
-                    "name": "FRONT_BASE_URL",
-                    "valueFrom": "/boom/FRONT_URL"
-                }
-            ],
-            "logConfiguration": {
-                "logDriver": "awslogs",
-                "options": {
-                    "awslogs-group": "/ecs/boom-worker",
-                    "awslogs-region": "$AWS_REGION",
-                    "awslogs-stream-prefix": "ecs"
-                }
-            }
+          "containerPort": 80,
+          "hostPort": 80,
+          "protocol": "tcp"
         }
-    ],
-    "volumes": [
+      ],
+      "essential": true,
+      "entryPoint": [],
+      "command": [],
+      "environment": [
         {
-            "name": "tmp",
-            "host": {}
+          "name": "REDIS_QUEUE",
+          "value": "queue:split:2stems"
+        }
+      ],
+      "mountPoints": [
+        {
+          "sourceVolume": "tmp",
+          "containerPath": "/app/tmp"
         },
         {
-            "name": "pretrained_models",
-            "host": {}
+          "sourceVolume": "pretrained_models",
+          "containerPath": "/app/pretrained_models"
         }
-    ],
-    "placementConstraints": [],
-    "requiresCompatibilities": [
-        "FARGATE"
-    ],
-    "cpu": "1024",
-    "memory": "4096"
+      ],
+      "volumesFrom": [],
+      "secrets": [
+        {
+          "name": "AWS_ACCESS_KEY_ID",
+          "valueFrom": "/boom/AWS_ACCESS_KEY_ID"
+        },
+        {
+          "name": "AWS_SECRET_ACCESS_KEY",
+          "valueFrom": "/boom/AWS_SECRET_ACCESS_KEY"
+        },
+        {
+          "name": "MAIL_API_KEY",
+          "valueFrom": "/boom/MAIL_API_KEY"
+        },
+        {
+          "name": "MAIL_API_SECRET",
+          "valueFrom": "/boom/MAIL_API_SECRET"
+        },
+        {
+          "name": "REDIS_URL",
+          "valueFrom": "/boom/REDIS_URL"
+        },
+        {
+          "name": "FRONT_BASE_URL",
+          "valueFrom": "/boom/FRONT_URL"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "$LOGS_GROUP",
+          "awslogs-region": "$AWS_REGION",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ],
+  "volumes": [
+    {
+      "name": "tmp",
+      "host": {}
+    },
+    {
+      "name": "pretrained_models",
+      "host": {}
+    }
+  ],
+  "placementConstraints": [],
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "cpu": "1024",
+  "memory": "4096"
 }
