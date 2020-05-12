@@ -49,7 +49,7 @@ ENV AWS_SECRET_ACCESS_KEY aws_secret_access_key
 ENV MAIL_API_KEY mail_api_key
 ENV MAIL_API_SECRET mail_api_secret
 ENV MAIL_SENDER_ADDRESS poom-poom-tchak@protonmail.com
-ENV MAIL_SENDER_NAME Boom
+ENV MAIL_SENDER_NAME "Boom !"
 ENV FRONT_BASE_URL http://localhost:8080
 ENV FLAG_UPLOAD=1
 ENV FLAG_WAVEFORM=1

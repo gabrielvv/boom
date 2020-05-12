@@ -15,14 +15,14 @@ def send_email(email, result_url):
             {
                 "From": {
                     "Email": Config.MAIL_SENDER_ADDRESS,
-                    "Name": "Boom !"
+                    "Name": Config.MAIL_SENDER_NAME
                 },
                 "To": [
                     {
                         "Email": email,
                     }
                 ],
-                "TemplateID": 1409403,
+                "TemplateID": Config.MAIL_TEMPLATE_ID,
                 "TemplateLanguage": True,
                 "Subject": "Your audio tracks are ready",
                 "Variables": {

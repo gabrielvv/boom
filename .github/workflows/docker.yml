@@ -1,0 +1,26 @@
+name: Docker
+
+on:
+  push:
+    branches:
+      - master
+      - 'ci/**'
+
+jobs:
+  worker:
+    env:
+      IMAGE: gabrielvv/worker
+      USERNAME: gabrielvv
+      PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Login
+      run: |
+        docker login -u $USERNAME -p $PASSWORD
+    - name: Build
+      run: |
+        docker build -t $IMAGE:latest ./worker
+    - name: Push
+      run: |
+        docker push $IMAGE

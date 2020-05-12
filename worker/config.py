@@ -14,7 +14,8 @@ class Config():
     MAIL_API_KEY = environ.get('MAIL_API_KEY')
     MAIL_API_SECRET = environ.get('MAIL_API_SECRET')
     MAIL_SENDER_ADDRESS = environ.get('MAIL_SENDER_ADDRESS')
-    MAIL_SENDER_NAME = environ.get('MAIL_SENDER_NAME')
+    MAIL_SENDER_NAME = environ.get('MAIL_SENDER_NAME', "Boom !")
+    MAIL_TEMPLATE_ID = environ.get('MAIL_TEMPLATE_ID', 1409403)
     FRONT_BASE_URL = environ.get('FRONT_BASE_URL')
     EXPIRATION = 3600 * 24
     FLAG_UPLOAD = int(environ.get('FLAG_UPLOAD', '1'))

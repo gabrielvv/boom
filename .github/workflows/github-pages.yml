@@ -22,6 +22,7 @@ jobs:
       - name: Delete unecessary files
         run: |
           mkdir gh-pages
+          mv ./public/boom-logo.png ./gh-pages/boom-logo.png
           mv ./public/index.html ./gh-pages/index.html
 
       - name: Deploy
