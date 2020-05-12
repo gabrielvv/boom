@@ -21,7 +21,7 @@ def split(file_name, dir_name, model='2stems'):
             f'separator not found for model {model}:'
             + ' a new separator will be created'
         )
-        stft_backend = 'tensorflow'
+        stft_backend = 'auto'
         separator = Separator('spleeter:' + model, stft_backend=stft_backend)
         separator_list[model] = separator
     return separator.separate_to_file(

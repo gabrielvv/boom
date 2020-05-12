@@ -39,6 +39,10 @@
       "volumesFrom": [],
       "secrets": [
         {
+          "name": "MAIL_SENDER_ADDRESS",
+          "valueFrom": "/boom/MAIL_SENDER_ADDRESS"
+        },
+        {
           "name": "AWS_ACCESS_KEY_ID",
           "valueFrom": "/boom/AWS_ACCESS_KEY_ID"
         },

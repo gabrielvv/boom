@@ -10,26 +10,24 @@ def send_email(email, result_url):
     logging.info('send_email email=%s result_url=%s', email, result_url)
     mailjet = Client(
         auth=(Config.MAIL_API_KEY, Config.MAIL_API_SECRET), version='v3.1')
-    text_part = f'Vous trouverez les pistes audio à cette adresse: '
-    text_part += result_url
-    html_part = f'Vous trouverez les pistes audio '
-    html_part += f'<a href="{result_url}">ici</a>'
     data = {
-        'Messages': [
+        "Messages": [
             {
                 "From": {
-                    "Name": Config.MAIL_SENDER_NAME,
-                    "Email": Config.MAIL_SENDER_ADDRESS
+                    "Email": Config.MAIL_SENDER_ADDRESS,
+                    "Name": "Boom !"
                 },
                 "To": [
                     {
-                        "Email": email
+                        "Email": email,
                     }
                 ],
-                "Subject": "Vos pistes audio sont prêtes",
-                "TextPart": text_part,
-                "HTMLPart": html_part,
-                "CustomID": "BoomProcessingResult"
+                "TemplateID": 1409403,
+                "TemplateLanguage": True,
+                "Subject": "Your audio tracks are ready",
+                "Variables": {
+                    "result_link": result_url
+                }
             }
         ]
     }
