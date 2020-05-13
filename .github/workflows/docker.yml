@@ -7,9 +7,10 @@ on:
       - 'ci/**'
 
 jobs:
+  # see https://github.com/dtinth/github-actions-docker-layer-caching-poc/blob/master/.github/workflows/dockerimage.yml#L61
   build_with_gpr:
     env:
-      IMAGE: gabrielvv/worker
+      IMAGE: boom-worker
       USERNAME: gabrielvv
       PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
     runs-on: ubuntu-latest
@@ -17,6 +18,7 @@ jobs:
       - uses: actions/checkout@v2
       - run: echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u $GITHUB_ACTOR --password-stdin
       - run: docker pull docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache-no-buildkit || true
-      - run: docker build ./worker -t $IMAGE:latest --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache-no-buildkit
-      - run: docker tag $IMAGE:latest docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache-no-buildkit && docker push docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache-no-buildkit || true
-      - run: docker login -u $USERNAME -p $PASSWORD && docker push $IMAGE
+      - run: docker build ./worker -t $IMAGE --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache-no-buildkit
+      - run: docker tag $IMAGE docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache-no-buildkit && docker push docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache-no-buildkit || true
+      - run: echo $PASSWORD | docker login -u $USERNAME --password-stdin
+      - run: docker tag $IMAGE $USERNAME/$IMAGE && docker push $USERNAME/$IMAGE
