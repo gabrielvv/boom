@@ -30,7 +30,7 @@ jobs:
               -e "s#\$REDIS_QUEUE#$REDIS_QUEUE#" \
               config/aws/task-definition.json
         );
-        TASK_DEF_ARN=$(aws ecs register-task-definition --cli-input-json $TASK_DEF | jq -r '.taskDefinition.taskDefinitionArn');
+        aws ecs register-task-definition --cli-input-json "$TASK_DEF"
     - name: update-service
       run: |
         aws ecs update-service --service $SERVICE_NAME --task-definition $TASK_NAME --force-new-deployment
