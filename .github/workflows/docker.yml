@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-      - 'ci/**'
 
 jobs:
   # see https://github.com/dtinth/github-actions-docker-layer-caching-poc/blob/master/.github/workflows/dockerimage.yml#L61
