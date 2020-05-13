@@ -1,6 +1,11 @@
 # BOOM
 
 ![Boom CI](https://github.com/gabrielvv/boom/workflows/Boom%20CI/badge.svg)
+[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=gabrielvv/boom)](https://dependabot.com)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/gabrielvv/boom.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/gabrielvv/boom/alerts/)
+[![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/gabrielvv/boom.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/gabrielvv/boom/context:javascript)
+[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/gabrielvv/boom.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/gabrielvv/boom/context:python)
+[![CodeFactor](https://www.codefactor.io/repository/github/gabrielvv/boom/badge)](https://www.codefactor.io/repository/github/gabrielvv/boom)
 
 ## Heroku
 
