@@ -1,4 +1,5 @@
 import logging
+import signal
 import disable_tensorflow_warning
 from os import path
 from s3 import create_presigned_url
@@ -126,10 +127,31 @@ def job(options):
         return
 
 
+class GracefulKiller:
+    kill_now = False
+
+    def __init__(self, exit_func=None):
+        signal.signal(signal.SIGINT, self.exit_gracefully)
+        signal.signal(signal.SIGTERM, self.exit_gracefully)
+        self.exit_func = exit_func
+
+    def exit_gracefully(self, signum, frame):
+        logging.info('exit_gracefully')
+        self.kill_now = True
+        if self.exit_func:
+            logging.info('exit_func')
+            self.exit_func()
+
+
 if __name__ == "__main__":
-    while not QUIT:
+    killer = GracefulKiller()
+    while (not QUIT) and (not killer.kill_now):
         serialized_payload = r.blpop([redis_queue], 30)
         logging.info('serialized_payload=%s', serialized_payload)
+
+        def my_exit_func():
+            r.lpush(redis_queue, serialized_payload[1])
+        killer.exit_func = my_exit_func
 
         if not serialized_payload:
             continue

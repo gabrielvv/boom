@@ -50,7 +50,14 @@ LOGS_GROUP=/ecs/boom-worker
 aws logs create-log-group --log-group-name $LOGS_GROUP --profile $PROFILE
 
 # register task
-TASK_DEF=$(sed -e "s#\$SECRET_ARN#$SECRET_ARN#" -e "s#\$AWS_REGION#$AWS_REGION#" -e "s#\$LOGS_GROUP#$LOGS_GROUP#" config/aws/task-definition.json);
+REDIS_QUEUE=queue:split:2stems
+TASK_DEF=$(
+  sed -e "s#\$SECRET_ARN#$SECRET_ARN#" \
+      -e "s#\$AWS_REGION#$AWS_REGION#" \
+      -e "s#\$LOGS_GROUP#$LOGS_GROUP#" \
+      -e "s#\$REDIS_QUEUE#$REDIS_QUEUE#" \
+      config/aws/task-definition.json
+);
 TASK_DEF_ARN=$(aws ecs register-task-definition --cli-input-json $TASK_DEF | jq -r '.taskDefinition.taskDefinitionArn');
 # register service
 SERVICE_DEF=$(sed "s#\$TASK_DEF_ARN#$TASK_DEF_ARN#" config/aws/service-definition.json);

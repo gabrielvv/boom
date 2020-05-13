@@ -23,7 +23,7 @@
       "environment": [
         {
           "name": "REDIS_QUEUE",
-          "value": "queue:split:2stems"
+          "value": "$REDIS_QUEUE"
         }
       ],
       "mountPoints": [
@@ -92,5 +92,5 @@
     "FARGATE"
   ],
   "cpu": "1024",
-  "memory": "4096"
+  "memory": "3072"
 }
