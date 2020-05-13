@@ -4,8 +4,14 @@
       {
           "Sid": "VisualEditor0",
           "Effect": "Allow",
-          "Action": "ecs:UpdateService",
-          "Resource": "$SERVICE_ARN"
+          "Action": [
+              "ecs:UpdateService",
+              "iam:PassRole"
+          ],
+          "Resource": [
+              "$SERVICE_ARN",
+              "$TASK_EXECUTION_ROLE"
+          ]
       },
       {
           "Sid": "VisualEditor1",
