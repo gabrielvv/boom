@@ -4,22 +4,35 @@ on:
   push:
     branches:
       - master
+      - 'ci/**'
 
 jobs:
-  worker:
+  # worker:
+  #   env:
+  #     IMAGE: gabrielvv/worker
+  #     USERNAME: gabrielvv
+  #     PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - name: Login
+  #     run: |
+  #       docker login -u $USERNAME -p $PASSWORD
+  #   - name: Build
+  #     run: |
+  #       docker build -t $IMAGE:latest ./worker
+  #   - name: Push
+  #     run: |
+  #       docker push $IMAGE
+  build_with_gpr:
     env:
       IMAGE: gabrielvv/worker
       USERNAME: gabrielvv
       PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Login
-      run: |
-        docker login -u $USERNAME -p $PASSWORD
-    - name: Build
-      run: |
-        docker build -t $IMAGE:latest ./worker
-    - name: Push
-      run: |
-        docker push $IMAGE
+      - uses: actions/checkout@v2
+      - run: echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u $GITHUB_ACTOR --password-stdin
+      - run: docker pull docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache-no-buildkit || true
+      - run: docker build ./worker -t $IMAGE:latest --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache-no-buildkit
+      - run: docker tag $IMAGE:latest docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache-no-buildkit && docker push docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache-no-buildkit || true
