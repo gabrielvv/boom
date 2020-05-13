@@ -1,0 +1,35 @@
+name: AWS ECS deployment
+
+on:
+  push:
+    branches:
+      - master
+      - 'ci/**'
+
+jobs:
+  worker:
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET }}
+      SECRET_ARN: ${{ secrets.SECRET_ARN }}
+      AWS_REGION: eu-west-3
+      LOGS_GROUP: /ecs/boom-worker
+      REDIS_QUEUE: queue:split:2stems
+      SERVICE_NAME: boom-service
+      TASK_NAME: boom-worker
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: register-task-definition
+      run: |
+        TASK_DEF=$(
+          sed -e "s#\$SECRET_ARN#$SECRET_ARN#" \
+              -e "s#\$AWS_REGION#$AWS_REGION#" \
+              -e "s#\$LOGS_GROUP#$LOGS_GROUP#" \
+              -e "s#\$REDIS_QUEUE#$REDIS_QUEUE#" \
+              config/aws/task-definition.json
+        );
+        TASK_DEF_ARN=$(aws ecs register-task-definition --cli-input-json $TASK_DEF | jq -r '.taskDefinition.taskDefinitionArn');
+    - name: update-service
+      run: |
+        aws ecs update-service --service $SERVICE_NAME --task-definition $TASK_NAME --force-new-deployment

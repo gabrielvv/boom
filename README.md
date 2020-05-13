@@ -64,7 +64,7 @@ SERVICE_DEF=$(sed "s#\$TASK_DEF_ARN#$TASK_DEF_ARN#" config/aws/service-definitio
 aws ecs create-service --cli-input-json $SERVICE_DEF > .aws/service.json;
 
 # restart service
-aws ecs update-service --force-new-deployment --service $SERVICE_NAME
+aws ecs update-service --service $SERVICE_NAME --force-new-deployment
 # update service task definition
 aws ecs update-service --service $SERVICE_NAME --task-definition $TASK:$REVISION --force-new-deployment
 
