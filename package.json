@@ -39,7 +39,7 @@
     "eslint-plugin-import": "^2.20.2",
     "http-serve": "^1.0.1",
     "husky": "^4.2.3",
-    "jest": "^25.2.7",
+    "jest": "^26.0.1",
     "lint-staged": "^10.1.2",
     "nodemon": "^2.0.2",
     "supertest": "^4.0.2"
