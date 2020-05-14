@@ -1,4 +1,4 @@
-FROM nginx
+FROM nginx:stable
 
 ARG API_BASE_URL
 
