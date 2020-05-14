@@ -1,8 +1,8 @@
 version: '3.4'
 
 services:
-  boom:
-    image: boom
+  api:
+    image: boom-api
     build: .
     environment:
       NODE_ENV: development
@@ -10,3 +10,9 @@ services:
       - 3000:3000
       - 9229:9229
     command: node --inspect=0.0.0.0:9229 .
+    depends_on:
+      - redis
+  redis:
+      image: redis
+      ports:
+        - "6379:6379"
