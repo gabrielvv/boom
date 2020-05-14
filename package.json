@@ -30,7 +30,7 @@
     "express-validator": "^6.4.0",
     "lodash": "^4.17.15",
     "redis": "^3.0.2",
-    "uuid": "^7.0.3"
+    "uuid": "^8.0.0"
   },
   "devDependencies": {
     "concurrently": "^5.2.0",
