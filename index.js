@@ -1,22 +1,12 @@
 const express = require('express');
 const helmet = require('helmet');
 const bodyParser = require('body-parser');
+const rateLimit = require('express-rate-limit');
 const cors = require('cors');
-const {
-  checkSchema,
-} = require('express-validator');
-const uuid = require('uuid');
 const redis = require('redis');
-const _ = require('lodash');
 const debug = require('debug')('boom');
-const { port, redis: redisConfig } = require('config');
-const { postSchema, getSchema, handleError } = require('./validation');
-const { getStatusUrl } = require('./utils');
-
-const storageProviders = {
-  // eslint-disable-next-line global-require
-  s3: require('./storage/s3'),
-};
+const { port, redis: redisConfig, rateLimit: { windowMs } } = require('config');
+const router = require('./router');
 
 const redisClient = redisConfig.url
   ? redis.createClient(redisConfig.url)
@@ -37,84 +27,24 @@ app.use(cors({
 }));
 app.use(helmet());
 
-const getRedisQueue = (model) => `${redisConfig.queueName}:${model}`;
+// Enable if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
+// see https://expressjs.com/en/guide/behind-proxies.html
+app.set('trust proxy', 1);
 
-const splitHandler = (extractPayloadFn) => (req, res) => {
-  const jobId = uuid.v4();
-  const { file, model, email } = extractPayloadFn(req);
-  const payload = {
-    id: jobId,
-    email,
-    file,
-    model,
-    status: getStatusUrl(req, jobId),
-  };
-  redisClient.rpush(getRedisQueue(model), JSON.stringify(payload), (length) => {
-    redisClient.setex(jobId, redisConfig.expiration, JSON.stringify({
-      status: 'queueing',
-      pos: length - 1,
-    }));
-  });
-
-  res.send(payload);
-};
-
-app.post('/api/split', checkSchema(postSchema), handleError(), splitHandler(
-  (req) => ({ ...req.body }),
-));
-
-app.get('/api/split', checkSchema(getSchema), handleError(), splitHandler(
-  (req) => ({ ...req.query }),
-));
-
-app.post('/form/:formId/storage/:provider', (req, res) => storageProviders[req.params.provider].createPresignedPost(req, res));
-
-app.get('/form/:formId/storage/:provider', (req, res) => storageProviders[req.params.provider].createPresignedGet(req, res));
-
-const extractWaveformData = (obj, waveformName) => JSON.parse(obj.waveforms[waveformName]).data;
-
-app.get('/api/result/:id', (req, res) => {
-  redisClient.get(req.params.id, (error, dataStr) => {
-    const dataObj = JSON.parse(dataStr);
-
-    if (!dataObj) {
-      return res.sendStatus(404);
-    }
-
-    if (dataObj.status !== 'done') {
-      return res.json(dataObj);
-    }
-
-    const findZip = (url) => url.includes('zip');
-    const findJson = (url) => url.includes('json');
-    const zip = _.find(dataObj.object_list, findZip);
-    const objectList = _.chain(dataObj.object_list)
-      .filter(_.negate(findZip))
-      .filter(_.negate(findJson))
-      .map((objectUrl) => {
-        const match = objectUrl.match(/\/(\w+\.(wav|mp3))\?/);
-        if (!match || match.length < 2) {
-          // TODO handle error
-        }
-
-        const name = match[1];
-        const waveform = extractWaveformData(dataObj, name);
-
-        return {
-          url: objectUrl,
-          name,
-          waveform,
-        };
-      })
-      .value();
-
-    return res.json({
-      status: dataObj.status,
-      objectList,
-      zip,
-    });
-  });
+const limiter = rateLimit({
+  windowMs,
+  max: 10,
+  draft_polli_ratelimit_headers: true,
 });
+
+app.use(limiter);
+app.use((req, res, next) => {
+  req.redisClient = redisClient;
+  next();
+});
+
+app.use('/api', router.api);
+app.use('/form', router.form);
 
 if (require.main === module) {
   app.listen(port, () => debug(`listening on port ${port}`));

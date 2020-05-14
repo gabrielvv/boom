@@ -1,5 +1,8 @@
 {
   "port": 3000,
+  "rateLimit": {
+    "windowsMs": 900000
+  },
   "redis": {
     "queueName": "queue:split",
     "host": "127.0.0.1",
