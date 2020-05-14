@@ -1,4 +1,5 @@
 const express = require('express');
+const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const {
@@ -34,6 +35,7 @@ app.use(bodyParser({
 app.use(cors({
   origin: '*',
 }));
+app.use(helmet());
 
 const getRedisQueue = (model) => `${redisConfig.queueName}:${model}`;
 
