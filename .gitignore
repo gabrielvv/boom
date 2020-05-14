@@ -1,7 +1,7 @@
 s3-tuto/
 pretrained_models/
 tmp/
-public/dev
+demo/dev
 .aws
 
 # redis

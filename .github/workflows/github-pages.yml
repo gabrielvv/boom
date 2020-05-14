@@ -13,16 +13,16 @@ jobs:
 
       - name: Set API url
         run:  |
-          sed -i "s/API_BASE_URL/$API_BASE_URL/" public/index.html
-          sed -i 's/BASE_PATH/\/boom/' public/index.html
+          sed -i "s/API_BASE_URL/$API_BASE_URL/" demo/index.html
+          sed -i 's/BASE_PATH/\/boom/' demo/index.html
         env:
           API_BASE_URL: ${{ secrets.API_BASE_URL }}
 
       - name: Delete unecessary files
         run: |
           mkdir gh-pages
-          mv ./public/boom-logo.png ./gh-pages/boom-logo.png
-          mv ./public/index.html ./gh-pages/index.html
+          mv ./demo/boom-logo.png ./gh-pages/boom-logo.png
+          mv ./demo/index.html ./gh-pages/index.html
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3

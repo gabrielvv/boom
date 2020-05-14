@@ -12,6 +12,8 @@
   <script src="https://unpkg.com/formiojs@latest/dist/formio.full.min.js"></script>
   <script src="https://unpkg.com/wavesurfer.js"></script>
   <script src="https://unpkg.com/@funjs/route-parser@1.4.0/dist/index.umd.min.js"></script>
+  <script src="https://unpkg.com/dompurify@1.0.8/dist/purify.min.js"></script>
+  <script src="https://unpkg.com/validator@13.0.0/validator.min.js"></script>
 
   <style>
     body {
@@ -329,51 +331,69 @@
 
     const spinner = `
       <div class="spinner">
-        <div class="lds-facebook"><div></div><div></div><div></div></div>
+        <div class="lds-facebook">
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
       </div>
     `;
 
     const displayResult = data => {
+      const { zip } = data;
+      if (!validator.isURL(zip)) {
+        throw new Error('ValidationError: zip should be a URL');
+      }
       document.querySelector('main').innerHTML = `
         <div id="result">
           <ul></ul>
         </div>
       `;
       const ul = document.querySelector('#result ul');
-      ul.insertAdjacentHTML('beforeend', `
+      ul.insertAdjacentHTML('beforeend', DOMPurify.sanitize(`
         <li>
           <div class="item">
             <div class="item__title">
               <div class="actions">
                 <button class="btn btn-default boom-btn--play-pause" disabled><i class="fa fa-play"></i></button>
-                <a href="${data.zip}" target="_blank" class="btn btn-default"><i class="fa fa-download"></i></a>
+                <a href="${zip}" target="_blank" class="btn btn-default"><i class="fa fa-download"></i></a>
               </div>
               <h3>multitrack.zip</h3>
             </div>
           </div>
         </li>
-      `);
+      `));
 
       let readyCount = 0;
       const waves = [];
 
       data.objectList.forEach(object => {
         const li = document.createElement('li');
-        li.innerHTML = `
+        const { url, name } = object;
+
+        if (!validator.isURL(url)) {
+          throw new Error('ValidationError: object.url should be a URL');
+        }
+
+        if (!validator.matches(name, /^[a-zA-Z0-9\.]+$/)) {
+          throw new Error('ValidationError: object.name should match /^[a-zA-Z0-9\.]+$/');
+        }
+
+        li.innerHTML = DOMPurify.sanitize(`
           <div class="item">
             <div class="item__title">
               <div class="actions">
                 <button class="btn btn-default boom-btn--play-pause" disabled><i class="fa fa-play"></i></button>
-                <a href="${object.url}" target="_blank" class="btn btn-default"><i class="fa fa-download"></i></a>
+                <a href="${url}" target="_blank" class="btn btn-default"><i class="fa fa-download"></i></a>
               </div>
-              <h3 >${object.name}</h3>
+              <h3 >${name}</h3>
             </div>
             <div class="item__content">
               ${spinner}
-              <div class="waveform loading" data-url="${object.url}"></div>
+              <div class="waveform loading" data-url="${url}"></div>
             </div>
           </div>
-        `;
+        `);
         ul.append(li)
 
         const container = li.querySelector('.waveform')
