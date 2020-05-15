@@ -11,9 +11,10 @@
     "expiration": 86400
   },
   "storage": {
+    "accept": ["mp3", "wav"],
     "s3": {
       "bucket": "test",
-      "uploadFolder": "upload"
+      "uploadDir": "upload"
     }
   }
 }

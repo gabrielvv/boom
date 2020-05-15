@@ -27,19 +27,19 @@ services:
       - redis
 
   # see https://github.com/deezer/spleeter/wiki/2.-Getting-started#using-docker-image
-  # worker_2stems:
-  #   image: boom-worker
-  #   build:
-  #     context: ./worker
-  #   env_file:
-  #     - ./worker/docker.env
-  #   volumes:
-  #     - tmp:/app/tmp
-  #     - models:/app/pretrained_models
-  #   depends_on:
-  #     - redis
-  #   environment:
-  #     - REDIS_QUEUE=queue:split:2stems
+  worker_2stems:
+    image: boom-worker
+    build:
+      context: ./worker
+    env_file:
+      - ./worker/docker.env
+    volumes:
+      - tmp:/app/tmp
+      - models:/app/pretrained_models
+    depends_on:
+      - redis
+    environment:
+      - REDIS_QUEUE=queue:split:2stems
 
   # worker_4stems:
   #   image: boom-worker

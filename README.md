@@ -29,6 +29,13 @@ sudo docker push gabrielvv/boom-worker
 
 ## AWS
 
+### IAM
+
+3 users:
+- boom-app: interact w/ s3
+- boom-ci: deploy on ECS
+- boom-admin: for administrative tasks via the cli or the console
+
 ### S3
 
 See https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html

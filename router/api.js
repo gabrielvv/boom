@@ -3,10 +3,15 @@ const {
   checkSchema,
 } = require('express-validator');
 const router = require('express').Router();
-const { redis: redisConfig, rateLimit: { windowMs } } = require('config');
+const {
+  redis: redisConfig,
+  rateLimit: { windowMs },
+  storage: { accept },
+} = require('config');
 const uuid = require('uuid');
 const rateLimit = require('express-rate-limit');
 const _ = require('lodash');
+const debug = require('debug')('boom:api');
 const { postSchema, handleValidationError } = require('../validation');
 const { getStatusUrl } = require('../utils');
 
@@ -46,10 +51,17 @@ router.post('/split', splitLimiter, checkSchema(postSchema), handleValidationErr
 ));
 
 const extractWaveformData = (obj, waveformName) => JSON.parse(obj.waveforms[waveformName]).data;
+// eslint-disable-next-line no-useless-escape
+const fileRegex = new RegExp(`/(\\w+\\.(${accept.join('|')}))\\?`);
 
 router.get('/result/:id', (req, res) => {
   req.redisClient.get(req.params.id, (error, dataStr) => {
     const dataObj = JSON.parse(dataStr);
+    // debug(dataObj);
+
+    if (error) {
+      return res.status(404).send(error);
+    }
 
     if (!dataObj) {
       return res.sendStatus(404);
@@ -66,9 +78,12 @@ router.get('/result/:id', (req, res) => {
       .filter(_.negate(findZip))
       .filter(_.negate(findJson))
       .map((objectUrl) => {
-        const match = objectUrl.match(/\/(\w+\.(wav|mp3))\?/);
+        const match = objectUrl.match(fileRegex);
+        debug(objectUrl, fileRegex, match);
+
         if (!match || match.length < 2) {
           // TODO handle error
+          console.error(`no match for regex ${fileRegex}`);
         }
 
         const name = match[1];
