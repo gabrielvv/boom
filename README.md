@@ -18,6 +18,9 @@ heroku addons:create heroku-redis:hobby-dev -a <app-name>
 # set env var
 heroku config:set AWS_BUCKET=$BUCKET
 heroku config:set ALLOWED_DOMAIN=$DOMAIN
+
+# deploy api
+git subtree push --prefix api heroku master
 ```
 
 ## Docker
