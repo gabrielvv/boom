@@ -3,7 +3,8 @@ version: '3.4'
 services:
   api:
     image: boom-api
-    build: .
+    build:
+      context: ./api
     environment:
       NODE_ENV: development
     ports:

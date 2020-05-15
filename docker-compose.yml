@@ -16,11 +16,12 @@ services:
       - "8080:80"
   api:
     image: boom-api
-    build: .
+    build:
+      context: ./api
     environment:
       NODE_ENV: production
     env_file:
-      - docker.env
+      - ./api/docker.env
     ports:
       - "3000:3000"
     depends_on:

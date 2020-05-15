@@ -15,6 +15,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1.0.0
+    - run: |
+        CHANGES=$(git diff-tree --no-commit-id --name-only -r $GITHUB_SHA)
+        if [[ $CHANGES == *"heroku"* || $CHANGES == *"api"* ]]; then echo "ok"; else exit; fi
     - run: |+
         cat >~/.netrc <<EOF
         machine api.heroku.com

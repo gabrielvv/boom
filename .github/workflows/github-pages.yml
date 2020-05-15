@@ -10,7 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-
+      - run: |
+          CHANGES=$(git diff-tree --no-commit-id --name-only -r $GITHUB_SHA)
+          if [[ $CHANGES == *"demo"* || $CHANGES == *"github-pages"* ]]; then echo "ok"; else exit; fi
       - name: Set API url
         run:  |
           sed -i "s/API_BASE_URL/$API_BASE_URL/" demo/index.html
