@@ -1,4 +1,5 @@
 const models = require('./models');
+const fileRegex = require('./fileRegex');
 
 const inOption = ['body'];
 
@@ -7,12 +8,16 @@ module.exports = {
     in: inOption,
     errorMessage: 'Invalid email',
     isEmail: true,
+    normalizeEmail: true,
     exists: true,
   },
   file: {
     in: inOption,
     errorMessage: 'Invalid file',
-    isURL: false,
+    trim: true,
+    matches: {
+      options: [fileRegex],
+    },
     exists: true,
   },
   model: {

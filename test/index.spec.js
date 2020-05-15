@@ -1,5 +1,5 @@
 const request = require('supertest');
-const { redis: redisConfig } = require('config');
+const { redis: redisConfig, storage } = require('config');
 const { app, redisClient } = require('../index');
 
 jest.mock('redis');
@@ -14,7 +14,7 @@ redisClient.rpush = mockRpush;
 describe('/api', () => {
   describe('/split', () => {
     test('returns a status url', async () => {
-      const file = 'http://example.com/1234567.mp3';
+      const file = `${storage.s3.uploadDir}/music-00000000-0000-0000-0000-000000000000.${storage.accept[0]}`;
       const model = '2stems';
       const email = 'user@example.com';
       const { body } = await request(app).post('/api/split').send({
@@ -23,7 +23,7 @@ describe('/api', () => {
         email,
       });
       const expectedPayload = {
-        id: 'fake-uuid',
+        id: '00000000-0000-0000-0000-000000000000',
         email,
         file,
         model,
