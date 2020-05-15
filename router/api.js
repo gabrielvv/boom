@@ -51,7 +51,6 @@ router.post('/split', splitLimiter, checkSchema(postSchema), handleValidationErr
 ));
 
 const extractWaveformData = (obj, waveformName) => JSON.parse(obj.waveforms[waveformName]).data;
-// eslint-disable-next-line no-useless-escape
 const fileRegex = new RegExp(`/(\\w+\\.(${accept.join('|')}))\\?`);
 
 router.get('/result/:id', (req, res) => {
