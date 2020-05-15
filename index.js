@@ -5,7 +5,9 @@ const rateLimit = require('express-rate-limit');
 const cors = require('cors');
 const redis = require('redis');
 const debug = require('debug')('boom');
-const { port, redis: redisConfig, rateLimit: { windowMs } } = require('config');
+const {
+  port, redis: redisConfig, rateLimit: { windowMs }, origin,
+} = require('config');
 const router = require('./router');
 
 const redisClient = redisConfig.url
@@ -23,7 +25,7 @@ app.use(bodyParser({
   limit: '50kb',
 }));
 app.use(cors({
-  origin: '*',
+  origin,
 }));
 app.use(helmet());
 
