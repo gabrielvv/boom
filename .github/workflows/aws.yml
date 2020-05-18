@@ -30,7 +30,7 @@ jobs:
               -e "s#\$AWS_REGION#$AWS_REGION#" \
               -e "s#\$LOGS_GROUP#$LOGS_GROUP#" \
               -e "s#\$REDIS_QUEUE#$REDIS_QUEUE#" \
-              config/aws/task-definition.json
+              aws/task-definition.json
         );
         aws ecs register-task-definition --cli-input-json "$TASK_DEF"
     - name: update-service

@@ -46,10 +46,10 @@ See https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html
 
 ```sh
 # https://docs.aws.amazon.com/AmazonS3/latest/dev/set-lifecycle-cli.html
-aws s3api put-bucket-lifecycle-configuration --bucket $BUCKET --lifecycle-configuration file://config/aws/bucket-lifecycle.json
+aws s3api put-bucket-lifecycle-configuration --bucket $BUCKET --lifecycle-configuration file://aws/bucket-lifecycle.json
 
 # cors
-aws s3api put-bucket-cors --bucket $BUCKET --profile $PROFILE --cors-configuration file://config/aws/bucket-cors.json
+aws s3api put-bucket-cors --bucket $BUCKET --profile $PROFILE --cors-configuration file://aws/bucket-cors.json
 ```
 
 ### Systems Manager - Parameter Store
@@ -72,11 +72,11 @@ TASK_DEF=$(
       -e "s#\$AWS_REGION#$AWS_REGION#" \
       -e "s#\$LOGS_GROUP#$LOGS_GROUP#" \
       -e "s#\$REDIS_QUEUE#$REDIS_QUEUE#" \
-      config/aws/task-definition.json
+      aws/task-definition.json
 );
 TASK_DEF_ARN=$(aws ecs register-task-definition --cli-input-json $TASK_DEF | jq -r '.taskDefinition.taskDefinitionArn');
 # register service
-SERVICE_DEF=$(sed "s#\$TASK_DEF_ARN#$TASK_DEF_ARN#" config/aws/service-definition.json);
+SERVICE_DEF=$(sed "s#\$TASK_DEF_ARN#$TASK_DEF_ARN#" aws/service-definition.json);
 aws ecs create-service --cli-input-json $SERVICE_DEF > .aws/service.json;
 
 # restart service
