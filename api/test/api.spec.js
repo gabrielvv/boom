@@ -1,11 +1,13 @@
 const request = require('supertest');
 const { redis: redisConfig, storage } = require('config');
-const { app, redisClient } = require('../index');
+const { app, redisClient } = require('../server');
 
 jest.mock('redis');
-jest.mock('../utils', () => ({
+jest.mock('../lib/utils', () => ({
   getStatusUrl: () => 'fake-url',
 }));
+// disable auth
+jest.mock('../lib/middleware/jwt-check', () => (req, res, next) => next());
 jest.mock('uuid');
 
 const mockRpush = jest.fn();
@@ -42,7 +44,10 @@ describe('/api', () => {
     test('returns a 422', async () => {
       const file = 'file';
       const model = '2stems';
-      const { status } = await request(app).post(`/api/split?file=${file}&model=${model}`);
+      const { status } = await request(app).post(`/api/split`).send({
+        file,
+        model
+      });
       expect(status).toEqual(422);
     });
   });

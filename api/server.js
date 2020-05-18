@@ -2,8 +2,6 @@ const express = require('express');
 const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const rateLimit = require('express-rate-limit');
-const jwt = require('express-jwt');
-const jwks = require('jwks-rsa');
 const cors = require('cors');
 const redis = require('redis');
 const debug = require('debug')('boom');
@@ -12,9 +10,9 @@ const {
   port,
   redis: redisConfig,
   rateLimit: { windowMs },
-  auth: authConfig
 } = require('config');
 const router = require('./router');
+const jwtCheck = require('./lib/middleware/jwt-check')
 
 const redisClient = redisConfig.url
   ? redis.createClient(redisConfig.url)
@@ -51,17 +49,6 @@ app.use((req, res, next) => {
   next();
 });
 
-const jwtCheck = jwt({
-  secret: jwks.expressJwtSecret({
-    cache: true,
-    rateLimit: true,
-    jwksRequestsPerMinute: 5,
-    jwksUri: `https://${authConfig.issuer}/.well-known/jwks.json`
-  }),
-  audience: authConfig.audience,
-  issuer: `https://${authConfig.issuer}/`,
-  algorithms: ['RS256']
-});
 
 app.use('/api', jwtCheck, router.api);
 app.use('/form', jwtCheck, router.form);
