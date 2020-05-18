@@ -179,8 +179,21 @@
   <main></main>
 
   <script type="text/javascript">
+    const apiToken = 'API_TOKEN';
     const baseUrl = 'API_BASE_URL';
+    const formioStoragePath =  '/storage';
     Formio.icons = 'fontawesome';
+
+    const oldXHROpen = window.XMLHttpRequest.prototype.open;
+
+    window.XMLHttpRequest.prototype.open = function (method, url, async, user, password) {
+      if (url.includes(formioStoragePath)) {
+        oldXHROpen.apply(this, arguments);
+        return this.setRequestHeader('Authorization', `Bearer ${apiToken}`);
+      }
+
+      return oldXHROpen.apply(this, arguments);
+    }
 
     Formio.setBaseUrl(baseUrl);
     const createForm = () => {
@@ -324,6 +337,7 @@
             }),
             headers: {
               'content-type': 'application/json',
+              'Authorization': `Bearer ${apiToken}`
             },
             method: 'POST',
             mode: 'cors',
@@ -334,7 +348,7 @@
               }
               return response.json();
             })
-            .then(data => location.replace(`BASE_PATH#/result/${data.id}`))
+            .then(data => location.replace(`BASE_PATH#/split/${data.id}`))
 
           form.on('submit', onSubmit);
         });
@@ -476,9 +490,12 @@
       on: true,
       interval: 10000
     };
-    const fetchResult = (id) => fetch(`${baseUrl}/api/result/${id}`, {
+    const fetchResult = (id) => fetch(`${baseUrl}/api/split/${id}`, {
       method: 'GET',
       mode: 'cors',
+      headers: {
+        'Authorization': `Bearer ${apiToken}`
+      }
     })
       .then(response => {
         if (response.status !== 200) {
@@ -508,7 +525,7 @@
       });
 
     const hashchange = function () {
-      const resultRoute = RouteParser('/result/:id')
+      const resultRoute = RouteParser('/split/:id')
       const match = resultRoute.match(location.hash.replace('#', ''));
       if (match) {
         polling.on = true;

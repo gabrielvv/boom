@@ -2,6 +2,8 @@ const express = require('express');
 const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const rateLimit = require('express-rate-limit');
+const jwt = require('express-jwt');
+const jwks = require('jwks-rsa');
 const cors = require('cors');
 const redis = require('redis');
 const debug = require('debug')('boom');
@@ -9,7 +11,8 @@ const {
   cors: { origin },
   port,
   redis: redisConfig,
-  rateLimit: { windowMs }
+  rateLimit: { windowMs },
+  auth: authConfig
 } = require('config');
 const router = require('./router');
 
@@ -48,8 +51,20 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/api', router.api);
-app.use('/form', router.form);
+const jwtCheck = jwt({
+  secret: jwks.expressJwtSecret({
+    cache: true,
+    rateLimit: true,
+    jwksRequestsPerMinute: 5,
+    jwksUri: `https://${authConfig.issuer}/.well-known/jwks.json`
+  }),
+  audience: authConfig.audience,
+  issuer: `https://${authConfig.issuer}/`,
+  algorithms: ['RS256']
+});
+
+app.use('/api', jwtCheck, router.api);
+app.use('/form', jwtCheck, router.form);
 
 if (require.main === module) {
   app.listen(port, () => debug(`listening on port ${port}`));
