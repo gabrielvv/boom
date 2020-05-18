@@ -15,9 +15,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1.0.0
-    - run: |
-        CHANGES=$(git diff-tree --no-commit-id --name-only -r -m $GITHUB_SHA)
-        if [[ $CHANGES == *"heroku"* || $CHANGES == *"api"* ]]; then echo "ok"; else exit; fi
+    # - run: |
+    #     CHANGES=$(git diff-tree --no-commit-id --name-only -r -m $GITHUB_SHA)
+    #     if [[ $CHANGES == *"heroku"* || $CHANGES == *"api"* ]]; then echo "ok"; else exit; fi
     - run: |+
         cat >~/.netrc <<EOF
         machine api.heroku.com
@@ -30,5 +30,5 @@ jobs:
     - name: Set heroku git remote
       run: heroku git:remote --app $HEROKU_APP
     - name: Push to Heroku
-      run: git subtree push --prefix api -f heroku HEAD:refs/heads/master
+      run: git subtree push --prefix api heroku HEAD:refs/heads/master
 
