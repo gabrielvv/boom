@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: |
-          CHANGES=$(git diff-tree --no-commit-id --name-only -r $GITHUB_SHA)
+          CHANGES=$(git diff-tree --no-commit-id --name-only -r -m $GITHUB_SHA)
           if [[ $CHANGES == *"demo"* || $CHANGES == *"github-pages"* ]]; then echo "ok"; else exit; fi
       - name: Set API url
         run:  |
