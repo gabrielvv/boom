@@ -30,5 +30,7 @@ jobs:
     - name: Set heroku git remote
       run: heroku git:remote --app $HEROKU_APP
     - name: Push to Heroku
-      run: git subtree push --prefix api heroku master
-
+      run: |
+        git subtree split --prefix api -b heroku
+        git push -f heroku heroku:master
+        git branch -D heroku
