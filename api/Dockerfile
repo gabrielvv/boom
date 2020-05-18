@@ -5,6 +5,7 @@ ENV REDIS_PORT 6379
 ENV REDIS_HOST redis
 ENV AWS_BUCKET poom-poom-tchak
 ENV DEBUG nodebug
+ENV CORS_ORIGIN *
 
 WORKDIR /usr/src/app
 

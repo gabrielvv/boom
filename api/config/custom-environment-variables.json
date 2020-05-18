@@ -1,6 +1,6 @@
 {
   "port": "PORT",
-  "origin": "ALLOWED_DOMAIN",
+  "cors": { "origin": "CORS_ORIGIN" },
   "redis": {
     "url": "REDIS_URL",
     "port": "REDIS_PORT",

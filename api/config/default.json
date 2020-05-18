@@ -1,5 +1,7 @@
 {
-  "origin": "*",
+  "cors": {
+    "origin": "*"
+  },
   "port": 3000,
   "rateLimit": {
     "windowMs": 900000

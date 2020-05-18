@@ -1,6 +1,8 @@
 <!DOCTYPE html>
+<html lang="en">
 
 <head>
+  <title>Boom Demo Application</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -14,8 +16,9 @@
   <script src="https://unpkg.com/@funjs/route-parser@1.4.0/dist/index.umd.min.js"></script>
   <script src="https://unpkg.com/dompurify@1.0.8/dist/purify.min.js"></script>
   <script src="https://unpkg.com/validator@13.0.0/validator.min.js"></script>
-  <script src="https://browser.sentry-cdn.com/5.15.5/bundle.min.js" integrity="sha384-wF7Jc4ZlWVxe/L8Ji3hOIBeTgo/HwFuaeEfjGmS3EXAG7Y+7Kjjr91gJpJtr+PAT" crossorigin="anonymous">
-  </script>
+  <script src="https://browser.sentry-cdn.com/5.15.5/bundle.min.js"
+    integrity="sha384-wF7Jc4ZlWVxe/L8Ji3hOIBeTgo/HwFuaeEfjGmS3EXAG7Y+7Kjjr91gJpJtr+PAT" crossorigin="anonymous">
+    </script>
   <script>
     Sentry.init({ dsn: 'SENTRY_DSN' });
   </script>
@@ -161,7 +164,6 @@
         display: none;
       }
     }
-
   </style>
 </head>
 
@@ -223,7 +225,8 @@
             tooltip: 'Your email is only stored the time necessary to process your file<br/>You will receive a mail when your files are ready',
             placeholder: 'user@example.com',
             attributes: {
-                autocomplete: "true"
+              autocomplete: "email",
+              "aria-label": "email"
             },
             hideLabel: false,
             spellcheck: true,
@@ -296,6 +299,9 @@
             },
             input: true,
             defaultValue: '2stems',
+            attributes: {
+              "aria-label": "model"
+            },
           },
           {
             type: 'button',

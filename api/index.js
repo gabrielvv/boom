@@ -6,7 +6,10 @@ const cors = require('cors');
 const redis = require('redis');
 const debug = require('debug')('boom');
 const {
-  port, redis: redisConfig, rateLimit: { windowMs }, origin,
+  cors: { origin },
+  port,
+  redis: redisConfig,
+  rateLimit: { windowMs }
 } = require('config');
 const router = require('./router');
 
