@@ -7,7 +7,7 @@ jest.mock('../lib/utils', () => ({
   getStatusUrl: () => 'fake-url',
 }));
 // disable auth
-jest.mock('../lib/middleware/jwt-check', () => (req, res, next) => next());
+jest.mock('../lib/middleware/jwtCheck', () => (req, res, next) => next());
 jest.mock('uuid');
 
 const mockRpush = jest.fn();

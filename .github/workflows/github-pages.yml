@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - 'feat/**'
 
 jobs:
   deploy:
@@ -15,6 +16,13 @@ jobs:
       #     if [[ $CHANGES == *"demo"* || $CHANGES == *"github-pages"* ]]; then echo "ok"; else exit; fi
       - name: Set API url
         run:  |
+          DATA="{\"client_id\":\"$TOKEN_CLIENT_ID\",\"client_secret\":\"$TOKEN_CLIENT_SECRET\", \"grant_type\": \"client_credentials\", \"audience\": \"$TOKEN_AUDIENCE\"}"
+          API_TOKEN=$(
+            curl --request POST \
+              --url $TOKEN_ISSUER \
+              --header 'content-type: application/json' \
+              --data $DATA | jq -r '.access_token'
+          )
           sed -i \
             -e "s/API_BASE_URL/$API_BASE_URL/" \
             -e "s/API_TOKEN/$API_TOKEN/" \
@@ -22,9 +30,12 @@ jobs:
             -e "s#SENTRY_DSN#$SENTRY_DSN#" \
             demo/index.html
         env:
+          TOKEN_ISSUER: ${{ secrets.TOKEN_ISSUER }}
+          TOKEN_AUDIENCE: ${{ secrets.TOKEN_AUDIENCE }}
+          TOKEN_CLIENT_ID: ${{ secrets.TOKEN_CLIENT_ID }}
+          TOKEN_CLIENT_SECRET: ${{ secrets.TOKEN_CLIENT_SECRET }}
           BASE_PATH: /boom
           API_BASE_URL: ${{ secrets.API_BASE_URL }}
-          API_TOKEN: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InpGeEhfYWQyYjlFZjFPeEJUWExDWCJ9.eyJpc3MiOiJodHRwczovL2Rldi1yZ2toM2U0MC5ldS5hdXRoMC5jb20vIiwic3ViIjoiUFp1WHFnVnVWN0ZWSDh3bEhVanhYcTByVzZMRkVxNG1AY2xpZW50cyIsImF1ZCI6Imh0dHBzOi8vcHJvdGVjdGVkLWRlcHRocy05MjA0Mi5oZXJva3VhcHAuY29tLyIsImlhdCI6MTU4OTc5Njg4NSwiZXhwIjoxNTg5ODgzMjg1LCJhenAiOiJQWnVYcWdWdVY3RlZIOHdsSFVqeFhxMHJXNkxGRXE0bSIsImd0eSI6ImNsaWVudC1jcmVkZW50aWFscyJ9.bgCn6-NUhOcZMNWZehDBsZi0hHrncX3_ZuRqymn9HvkrIsYQHQ-liewpse8zq3kDDCcf9n7jhrNG6niNBZ6I7CqO26Dlh183SUwP0j-1RvnVq3SjX3R8-fLkhPOXfcFSmEZ5k3_I_fPrivkzo47mtLtK8cmEFqx2r41n6ZFjrnGFpyBsF8JH7dM2MLFScyrFFWVERmJdh3E8bkPGcdOrHqPqKx68dX_1MMXpwPg2NqYfjymC2Ouw0bKrhRC8u6PEQJw4bx4uzkAru8gTHjkUHU7xpkGKelb4sulMgCiRkeHya6qAUYCOYbQ1BmSq0m-xx3L5dRxUB3s4X_vjypDb-w
           SENTRY_DSN: https://bb81525546fe4752a74e871a406791c6@o158732.ingest.sentry.io/5241856
 
       - name: Delete unecessary files

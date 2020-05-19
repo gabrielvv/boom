@@ -12,7 +12,7 @@ const uuid = require('uuid');
 const rateLimit = require('express-rate-limit');
 const _ = require('lodash');
 const debug = require('debug')('boom:api');
-const { postSchema, handleValidationError } = require('../lib/validation');
+const { splitPostSchema, handleValidationError } = require('../lib/validation');
 const { getStatusUrl } = require('../lib/utils');
 
 const getRedisQueue = (model) => `${redisConfig.queueName}:${model}`;
@@ -47,7 +47,7 @@ const splitLimiter = rateLimit({
 });
 
 
-router.post('/split', splitLimiter, checkSchema(postSchema), handleValidationError(), splitHandler(
+router.post('/split', splitLimiter, checkSchema(splitPostSchema), handleValidationError(), splitHandler(
   (req) => ({ ...req.body }),
 ));
 
