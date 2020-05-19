@@ -22,7 +22,7 @@ jobs:
             curl --request POST \
               --url $TOKEN_ISSUER \
               --header 'content-type: application/json' \
-              --data $DATA | jq -r '.access_token'
+              --data "$DATA" | jq -r '.access_token'
           )
           sed -i \
             -e "s/API_BASE_URL/$API_BASE_URL/" \
