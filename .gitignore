@@ -1,7 +1,3 @@
-s3-tuto/
-pretrained_models/
-tmp/
-demo/dev
 .aws
 
 # redis

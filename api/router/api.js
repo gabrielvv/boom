@@ -12,8 +12,8 @@ const uuid = require('uuid');
 const rateLimit = require('express-rate-limit');
 const _ = require('lodash');
 const debug = require('debug')('boom:api');
-const { postSchema, handleValidationError } = require('../validation');
-const { getStatusUrl } = require('../utils');
+const { postSchema, handleValidationError } = require('../lib/validation');
+const { getStatusUrl } = require('../lib/utils');
 
 const getRedisQueue = (model) => `${redisConfig.queueName}:${model}`;
 
@@ -46,6 +46,7 @@ const splitLimiter = rateLimit({
   },
 });
 
+
 router.post('/split', splitLimiter, checkSchema(postSchema), handleValidationError(), splitHandler(
   (req) => ({ ...req.body }),
 ));
@@ -53,7 +54,7 @@ router.post('/split', splitLimiter, checkSchema(postSchema), handleValidationErr
 const extractWaveformData = (obj, waveformName) => JSON.parse(obj.waveforms[waveformName]).data;
 const fileRegex = new RegExp(`/(\\w+\\.(${accept.join('|')}))\\?`);
 
-router.get('/result/:id', (req, res) => {
+router.get('/split/:id', (req, res) => {
   req.redisClient.get(req.params.id, (error, dataStr) => {
     const dataObj = JSON.parse(dataStr);
     // debug(dataObj);
