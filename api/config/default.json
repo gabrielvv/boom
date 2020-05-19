@@ -19,5 +19,9 @@
       "bucket": "test",
       "uploadDir": "upload"
     }
+  },
+  "auth": {
+    "issuer": "issuer",
+    "audience": "audience"
   }
 }
