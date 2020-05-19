@@ -1,5 +1,6 @@
 /* eslint-disable global-require */
 module.exports = {
-  postSchema: require('./post'),
+  splitPostSchema: require('./splitPost'),
+  tokenPostSchema: require('./tokenPost'),
   handleValidationError: require('./handleError'),
 };

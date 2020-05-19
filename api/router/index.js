@@ -2,4 +2,5 @@
 module.exports = {
   api: require('./api'),
   form: require('./form'),
+  oauth: require('./oauth'),
 };

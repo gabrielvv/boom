@@ -12,7 +12,7 @@ const {
   rateLimit: { windowMs },
 } = require('config');
 const router = require('./router');
-const jwtCheck = require('./lib/middleware/jwt-check')
+const jwtCheck = require('./lib/middleware/jwtCheck');
 
 const redisClient = redisConfig.url
   ? redis.createClient(redisConfig.url)
@@ -52,6 +52,7 @@ app.use((req, res, next) => {
 
 app.use('/api', jwtCheck, router.api);
 app.use('/form', jwtCheck, router.form);
+app.use('/oauth', router.oauth);
 
 if (require.main === module) {
   app.listen(port, () => debug(`listening on port ${port}`));

@@ -69,6 +69,9 @@ web_modules/
 # Yarn Integrity file
 .yarn-integrity
 
+# local files
+*.local*
+
 # dotenv environment variables file
 .env
 .env.test
