@@ -19,9 +19,5 @@
       "bucket": "test",
       "uploadDir": "upload"
     }
-  },
-  "auth": {
-    "issuer": "dev-rgkh3e40.eu.auth0.com",
-    "audience": "https://protected-depths-92042.herokuapp.com/"
   }
 }

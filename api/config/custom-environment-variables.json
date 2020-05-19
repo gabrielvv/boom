@@ -11,5 +11,9 @@
     "s3": {
       "bucket": "AWS_BUCKET"
     }
+  },
+  "auth": {
+    "issuer": "TOKEN_ISSUER",
+    "audience": "TOKEN_AUDIENCE"
   }
 }

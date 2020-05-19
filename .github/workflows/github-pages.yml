@@ -16,6 +16,7 @@ jobs:
       #     if [[ $CHANGES == *"demo"* || $CHANGES == *"github-pages"* ]]; then echo "ok"; else exit; fi
       - name: Set API url
         run:  |
+          set -e -o pipefail
           DATA="{\"client_id\":\"$TOKEN_CLIENT_ID\",\"client_secret\":\"$TOKEN_CLIENT_SECRET\", \"grant_type\": \"client_credentials\", \"audience\": \"$TOKEN_AUDIENCE\"}"
           API_TOKEN=$(
             curl --request POST \
