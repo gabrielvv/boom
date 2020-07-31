@@ -1,4 +1,4 @@
-FROM node:10.13-alpine
+FROM node:14.7.0-alpine
 
 ENV NODE_ENV production
 ENV REDIS_PORT 6379
