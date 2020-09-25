@@ -1,38 +1,38 @@
-name: AWS ECS deployment
+# name: AWS ECS deployment
 
-on:
-  push:
-    branches:
-      - master
+# on:
+#   push:
+#     branches:
+#       - master
 
-jobs:
-  worker:
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET }}
-      SECRET_ARN: ${{ secrets.SECRET_ARN }}
-      AWS_DEFAULT_REGION: eu-west-3
-      AWS_REGION: eu-west-3
-      LOGS_GROUP: /ecs/boom-worker
-      REDIS_QUEUE: queue:split:2stems
-      SERVICE_NAME: boom-service
-      TASK_NAME: boom-worker
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
+# jobs:
+#   worker:
+#     env:
+#       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
+#       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET }}
+#       SECRET_ARN: ${{ secrets.SECRET_ARN }}
+#       AWS_DEFAULT_REGION: eu-west-3
+#       AWS_REGION: eu-west-3
+#       LOGS_GROUP: /ecs/boom-worker
+#       REDIS_QUEUE: queue:split:2stems
+#       SERVICE_NAME: boom-service
+#       TASK_NAME: boom-worker
+#     runs-on: ubuntu-latest
+#     steps:
+    # - uses: actions/checkout@v2
     # - run: |
     #     CHANGES=$(git diff-tree --no-commit-id --name-only -r -m $GITHUB_SHA)
     #     if [[ $CHANGES == *"worker"* || $CHANGES == *"aws"* ]]; then echo "ok"; else exit; fi
-    - name: register-task-definition
-      run: |
-        TASK_DEF=$(
-          sed -e "s#\$SECRET_ARN#$SECRET_ARN#" \
-              -e "s#\$AWS_REGION#$AWS_REGION#" \
-              -e "s#\$LOGS_GROUP#$LOGS_GROUP#" \
-              -e "s#\$REDIS_QUEUE#$REDIS_QUEUE#" \
-              aws/task-definition.json
-        );
-        aws ecs register-task-definition --cli-input-json "$TASK_DEF"
-    - name: update-service
-      run: |
-        aws ecs update-service --service $SERVICE_NAME --task-definition $TASK_NAME --force-new-deployment
+    # - name: register-task-definition
+    #   run: |
+    #     TASK_DEF=$(
+    #       sed -e "s#\$SECRET_ARN#$SECRET_ARN#" \
+    #           -e "s#\$AWS_REGION#$AWS_REGION#" \
+    #           -e "s#\$LOGS_GROUP#$LOGS_GROUP#" \
+    #           -e "s#\$REDIS_QUEUE#$REDIS_QUEUE#" \
+    #           aws/task-definition.json
+    #     );
+    #     aws ecs register-task-definition --cli-input-json "$TASK_DEF"
+    # - name: update-service
+    #   run: |
+    #     aws ecs update-service --service $SERVICE_NAME --task-definition $TASK_NAME --force-new-deployment

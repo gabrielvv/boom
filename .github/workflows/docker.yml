@@ -1,26 +1,26 @@
-name: Docker
+# name: Docker
 
-on:
-  push:
-    branches:
-      - master
+# on:
+#   push:
+#     branches:
+#       - master
 
-jobs:
-  # see https://github.com/dtinth/github-actions-docker-layer-caching-poc/blob/master/.github/workflows/dockerimage.yml#L61
-  build_with_gpr:
-    env:
-      IMAGE: boom-worker
-      USERNAME: gabrielvv
-      PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      # - run: |
-      #     CHANGES=$(git diff-tree --no-commit-id --name-only -r -m $GITHUB_SHA)
-      #     if [[ $CHANGES == *"worker"* || $CHANGES == *"docker"* ]]; then echo "ok"; else exit; fi
-      - run: echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u $GITHUB_ACTOR --password-stdin
-      - run: docker pull docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache-no-buildkit || true
-      - run: docker build ./worker -t $IMAGE --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache-no-buildkit
-      - run: docker tag $IMAGE docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache-no-buildkit && docker push docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache-no-buildkit || true
-      - run: echo $PASSWORD | docker login -u $USERNAME --password-stdin
-      - run: docker tag $IMAGE $USERNAME/$IMAGE && docker push $USERNAME/$IMAGE
+# jobs:
+#   # see https://github.com/dtinth/github-actions-docker-layer-caching-poc/blob/master/.github/workflows/dockerimage.yml#L61
+#   build_with_gpr:
+#     env:
+#       IMAGE: boom-worker
+#       USERNAME: gabrielvv
+#       PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v2
+#       # - run: |
+#       #     CHANGES=$(git diff-tree --no-commit-id --name-only -r -m $GITHUB_SHA)
+#       #     if [[ $CHANGES == *"worker"* || $CHANGES == *"docker"* ]]; then echo "ok"; else exit; fi
+#       - run: echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u $GITHUB_ACTOR --password-stdin
+#       - run: docker pull docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache-no-buildkit || true
+#       - run: docker build ./worker -t $IMAGE --cache-from=docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache-no-buildkit
+#       - run: docker tag $IMAGE docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache-no-buildkit && docker push docker.pkg.github.com/$GITHUB_REPOSITORY/build-cache-no-buildkit || true
+#       - run: echo $PASSWORD | docker login -u $USERNAME --password-stdin
+#       - run: docker tag $IMAGE $USERNAME/$IMAGE && docker push $USERNAME/$IMAGE

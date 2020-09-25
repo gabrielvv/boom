@@ -1,36 +1,36 @@
-name: Heroku
+# name: Heroku
 
-on:
-  push:
-    branches:
-      - master
+# on:
+#   push:
+#     branches:
+#       - master
 
-jobs:
-  deploy:
-    env:
-      HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-      HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
-      HEROKU_APP: ${{ secrets.HEROKU_APP }}
-    runs-on: ubuntu-latest
+# jobs:
+#   deploy:
+#     env:
+#       HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+#       HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
+#       HEROKU_APP: ${{ secrets.HEROKU_APP }}
+#     runs-on: ubuntu-latest
 
-    steps:
-    - uses: actions/checkout@v1.0.0
-    # - run: |
-    #     CHANGES=$(git diff-tree --no-commit-id --name-only -r -m $GITHUB_SHA)
-    #     if [[ $CHANGES == *"heroku"* || $CHANGES == *"api"* ]]; then echo "ok"; else exit; fi
-    - run: |+
-        cat >~/.netrc <<EOF
-        machine api.heroku.com
-            login $HEROKU_EMAIL
-            password $HEROKU_API_KEY
-        machine git.heroku.com
-            login $HEROKU_EMAIL
-            password $HEROKU_API_KEY
-        EOF
-    - name: Set heroku git remote
-      run: heroku git:remote --app $HEROKU_APP
-    - name: Push to Heroku
-      run: |
-        git subtree split --prefix api -b heroku
-        git push -f heroku heroku:master
-        git branch -D heroku
+#     steps:
+#     - uses: actions/checkout@v1.0.0
+#     # - run: |
+#     #     CHANGES=$(git diff-tree --no-commit-id --name-only -r -m $GITHUB_SHA)
+#     #     if [[ $CHANGES == *"heroku"* || $CHANGES == *"api"* ]]; then echo "ok"; else exit; fi
+#     - run: |+
+#         cat >~/.netrc <<EOF
+#         machine api.heroku.com
+#             login $HEROKU_EMAIL
+#             password $HEROKU_API_KEY
+#         machine git.heroku.com
+#             login $HEROKU_EMAIL
+#             password $HEROKU_API_KEY
+#         EOF
+#     - name: Set heroku git remote
+#       run: heroku git:remote --app $HEROKU_APP
+#     - name: Push to Heroku
+#       run: |
+#         git subtree split --prefix api -b heroku
+#         git push -f heroku heroku:master
+#         git branch -D heroku
