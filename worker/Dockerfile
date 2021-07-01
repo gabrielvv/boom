@@ -1,7 +1,7 @@
 # see https://github.com/deezer/spleeter/wiki/2.-Getting-started#using-docker-image
 # see https://github.com/deezer/spleeter/blob/master/docker/python-3.7.dockerfile
 # For more information, please refer to https://aka.ms/vscode-docker-python
-FROM python:3.7.9
+FROM python:3.9.6
 
 # Build audiowaveform from source
 RUN apt-get update && apt-get install -y git make cmake gcc g++ libmad0-dev \
